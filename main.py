@@ -2,10 +2,10 @@
 
 
 def select_text_automata():
-    available_automatas = [
+    available_automatas:list[str] = [
         'text_automata.txt',
     ]
-    selected = 'text_automata.txt'
+    selected:str = 'text_automata.txt'
     print("What automata do you want to choose ?")
     print("selected :",selected)
     for i in range(len(available_automatas)):
@@ -37,7 +37,8 @@ def FA_reader(selected:str) -> FA:
 
 
 def main():
-    FA_reader(select_text_automata())
+    selected =select_text_automata()
+    FA_reader(selected)
 
     
 
