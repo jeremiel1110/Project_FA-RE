@@ -35,6 +35,15 @@ def FA_reader(selected:str) -> FA:
 
     return FA
 
+def print_FA(FA:FA):
+    print("Alphabet size :", FA.alphabet_size)
+    print("Number of states :", FA.nb_states)
+    print("Initial states :", FA.initial_states)
+    print("Final states :", FA.final_states)
+    print("Number of transitions :", FA.nb_transitions)
+    print("Transitions :")
+    for transition in FA.transitions:
+        print(transition)
 
 def main():
     FA_reader(select_text_automata())
