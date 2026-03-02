@@ -13,10 +13,7 @@ def select_text_automata():
     selected = available_automatas[int(input())]
     return selected
 
-def read_automata(selected):
-    with open(selected, 'r') as file :
-        text= file.read()
-    print(text)
+
 
 
 class FA:
@@ -30,18 +27,17 @@ class FA:
 
 FA1 = FA(0, 0, [], [], 0, [])
 
-def FA_reader(filename:str) -> FA:
-    with open(filename) as file:
+def FA_reader(selected:str) -> FA:
+    with open(selected) as file:
         lines = [line.rstrip() for line in file]
 
     FA = FA(lines[0], lines[1], lines[2], lines[3], lines[4], lines[5:])
 
     return FA
 
-    return text
 
 def main():
-    read_automata(select_text_automata())
+    FA_reader(select_text_automata())
 
     
 
