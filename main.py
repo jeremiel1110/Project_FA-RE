@@ -31,9 +31,9 @@ def FA_reader(selected:str) -> FA:
     with open(selected) as file:
         lines = [line.rstrip() for line in file]
 
-    FA = FA(lines[0], lines[1], lines[2], lines[3], lines[4], lines[5:])
+    FA1 = FA(lines[0], lines[1], lines[2], lines[3], lines[4], lines[5:])
 
-    return FA
+    return FA1
 
 def print_FA(FA:FA):
     print("Alphabet size :", FA.alphabet_size)
@@ -46,9 +46,9 @@ def print_FA(FA:FA):
         print(transition)
 
 def main():
-    selected =select_text_automata()
-    FA_reader(selected)
-
+    selected = select_text_automata()
+    FA_used = FA_reader(selected)
+    print_FA(FA_used)
     
 
 main()
