@@ -13,3 +13,11 @@ class FA:
         self.transitions = transitions
 
 FA1 = FA(0, 0, [], [], 0, [])
+
+def FA_reader(filename:str) -> FA:
+    with open(filename) as file:
+        lines = [line.rstrip() for line in file]
+
+    FA = FA(lines[0], lines[1], lines[2], lines[3], lines[4], lines[5:])
+
+    return FA
