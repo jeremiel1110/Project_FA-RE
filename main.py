@@ -1,5 +1,21 @@
-with open('text_automata.txt', 'r') as file:
-    text = file.read()
+
+
+
+def select_text_automata():
+    available_automatas = [
+        'text_automata.txt',
+    ]
+    selected = 'text_automata.txt'
+    print("What automata do you want to choose ?")
+    print("selected :",selected)
+    for i in range(len(available_automatas)):
+        print(i,".  ",available_automatas[i])
+    selected = available_automatas[int(input())]
+    return selected
+
+def read_automata(selected):
+    with open(selected, 'r') as file :
+        text= file.read()
     print(text)
 
 
@@ -21,3 +37,12 @@ def FA_reader(filename:str) -> FA:
     FA = FA(lines[0], lines[1], lines[2], lines[3], lines[4], lines[5:])
 
     return FA
+
+    return text
+
+def main():
+    read_automata(select_text_automata())
+
+    
+
+main()
