@@ -37,19 +37,40 @@ class FA:
     def is_deterministic(self):
         if self.initial_states()[0] != 1:
             return print("The automata is not deterministic because it has more than one initial state.")
-        for i in range(0,self.nb_transitions-1):
+        for i in range(self.nb_transitions-1):
             if self.transitions[i][:1] == self.transitions[i+1][:1]:
                 return print("The automata is not deterministic because it has more than one transition for the same state and the same letter.")
         return print("The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
     
+    def is_complete(self):
+        lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('a') + self.alphabet_size)] #get alphabet
 
+        if self.nb_transitions < self.nb_states * self.alphabet_size:
+            return print("The automata is not complete because it does not have a transition for every state and every letter of the alphabet.")
+        for i in range(self.nb_transitions):
+            for j in range(len()):
+                pass
+        return print("The automata is complete because it has a transition for every state and every letter of the alphabet.")
 
 
 def FA_create(selected:str) -> FA:
     with open(selected) as file:
         lines = [line.rstrip() for line in file]
 
-    FA1 = FA(lines[0], lines[1], lines[2], lines[3], lines[4], lines[5:])
+    # TEMP COMMENT
+    # for starting states, to make them a tuple like (1, {0}) being (nb of starting states, {list of starting state})
+    starting_states_list = []
+    for character in lines[1][1:]:
+        if character != " ":
+            starting_states_list.append(int(character))
+    #same for ending
+    ending_states_list = []
+    for character in lines[2][1:]:
+        if character != " ":
+            ending_states_list.append(int(character))
+
+    FA1 = FA(lines[0], (int(lines[1][0]), starting_states_list), (int(lines[2][0]), ending_states_list), lines[3], lines[4], lines[5:])
+
     return FA1
 
 
