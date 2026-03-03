@@ -1,18 +1,14 @@
-
-
-
 def select_text_automata():
-    available_automatas:list[str] = [
-        'text_automata.txt',
-    ]
-    selected:str = 'text_automata.txt'
+    automatas = ['text_automata.txt']
+    selected = 'text_automata.txt'
     print("What automata do you want to choose ?")
     print("selected :",selected)
-    for i in range(len(available_automatas)):
-        print(i,".  ",available_automatas[i])
-    selected = available_automatas[int(input())]
-    return selected
 
+    for i in range(len(automatas)):
+        print(i,".  ",automatas[i],"")
+
+    selected = automatas[int(input())]
+    return selected
 
 
 
@@ -25,30 +21,30 @@ class FA:
         self.nb_transitions = nb_transitions
         self.transitions = transitions
 
-FA1 = FA(0, 0, [], [], 0, [])
+    
+    def Display_FA(self):
+        print("Alphabet size :", self.alphabet_size)
+        print("Number of states :", self.nb_states)
+        print("Initial states :", self.initial_states)
+        print("Final states :", self.final_states)
+        print("Number of transitions :", self.nb_transitions)
+        print("Transitions :")
+        for transition in self.transitions:
+            print(transition)
+
+
 
 def FA_reader(selected:str) -> FA:
     with open(selected) as file:
         lines = [line.rstrip() for line in file]
 
     FA1 = FA(lines[0], lines[1], lines[2], lines[3], lines[4], lines[5:])
-
     return FA1
 
-def print_FA(FA:FA):
-    print("Alphabet size :", FA.alphabet_size)
-    print("Number of states :", FA.nb_states)
-    print("Initial states :", FA.initial_states)
-    print("Final states :", FA.final_states)
-    print("Number of transitions :", FA.nb_transitions)
-    print("Transitions :")
-    for transition in FA.transitions:
-        print(transition)
 
 def main():
     selected = select_text_automata()
     FA_used = FA_reader(selected)
-    print_FA(FA_used)
-    
+    FA_used.Display_FA()
 
 main()
