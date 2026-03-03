@@ -46,7 +46,7 @@ class FA:
     def is_complete(self):
         for i in range(self.nb_states):
             for j in range(int(self.alphabet_size)):
-                if not any(transition.startswith(str(i)+chr(97+j)) for transition in self.transitions):
+                if len(self.transitions[str(i)][chr(j + ord('a'))]) == 0:
                     return print("The automata is not complete because it has at least one state that does not have a transition for at least one letter.")
         return print("The automata is complete because all states have a transition for all letters.")
 
@@ -55,10 +55,11 @@ class FA:
         if self.initial_states[0] != 1:
             print("The automata is not standard because it has more than one initial state.")
             return False
-        for i in range(int(self.nb_transitions)-1):
-            if self.transitions[i][2] == '0':
-                print("The automata is not standard because it has a transition to the initial state.")
-                return False
+        for i in range(self.nb_states):
+            for j in range(int(self.alphabet_size)):
+                if "0" in self.transitions[str(i)][chr(j + ord('a'))]:
+                    print("The automata is not standard because it has a transition to the initial state.")
+                    return False
         print("The automata is standard because it has only one initial state and no transition to the initial state.")
 
 
