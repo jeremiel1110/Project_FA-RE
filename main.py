@@ -42,15 +42,9 @@ class FA:
                 return print("The automata is not deterministic because it has more than one transition for the same state and the same letter.")
         return print("The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
     
-    def is_complete(self):
-        lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('a') + self.alphabet_size)] #get alphabet
 
-        if self.nb_transitions < self.nb_states * self.alphabet_size:
-            return print("The automata is not complete because it does not have a transition for every state and every letter of the alphabet.")
-        for i in range(self.nb_transitions):
-            for j in range(len()):
-                pass
-        return print("The automata is complete because it has a transition for every state and every letter of the alphabet.")
+            
+
 
 
 def FA_create(selected:str) -> FA:
