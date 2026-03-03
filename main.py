@@ -167,8 +167,8 @@ def main():
 
     if not FA_used.is_standard():
         if Ask_for_standardization():
-            want_to_standardize()
-        
+            SFA=standardization(FA_used)
+            
 
 
 
