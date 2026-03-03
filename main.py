@@ -34,6 +34,16 @@ class FA:
             print(transition)
 
 
+    def is_deterministic(self):
+        if self.initial_states()[0] != 1:
+            return print("The automata is not deterministic because it has more than one initial state.")
+        for i in range(0,self.nb_transitions-1):
+            if self.transitions[i][:1] == self.transitions[i+1][:1]:
+                return print("The automata is not deterministic because it has more than one transition for the same state and the same letter.")
+        return print("The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
+    
+
+
 
 def FA_create(selected:str) -> FA:
     with open(selected) as file:
@@ -96,5 +106,7 @@ def main():
     FA_used = FA_create(selected)
     FA_used.Display_FA()
     print_FA(FA_used)
+
+    FA_used.is_deterministic()
 
 main()
