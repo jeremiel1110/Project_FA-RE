@@ -1,12 +1,21 @@
+import os
+
 def select_text_automata():
-    available_automatas:list[str] = ['text_automata.txt']
-    selected:str = 'text_automata.txt'
+    automatas = []
+    path='./automatons'
+    for file in os.scandir(path):
+        if file.name.endswith('.txt'):
+           automatas.append(file.name)
+    selected = 'text_automatas.txt'
+    
     print("What automata do you want to choose ?")
     print("selected :",selected)
-    for i in range(len(available_automatas)):
-        print(i,".  ",available_automatas[i])
-    selected = available_automatas[int(input())]
-    return selected
+
+    for i in range(len(automatas)):
+        print(i,".  ",automatas[i],"")
+
+    selected = automatas[int(input())]
+    return path+'/'+selected
 
 
 class FA:
@@ -102,7 +111,7 @@ class FA:
 
 
 def main():
-    selected = "automatons/text_automata.txt"
+    selected = select_text_automata()
     FiniteAutomaton = FA.import_FA(selected)
     FiniteAutomaton.print_info()
     FiniteAutomaton.display_FA()
