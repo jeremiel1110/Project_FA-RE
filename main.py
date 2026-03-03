@@ -1,5 +1,5 @@
 def select_text_automata():
-    automatas = ['text_automata.txt']
+    automatas = ['text_automata.txt','text_automata2.txt','text_automata3.txt','text_automata4.txt','text_automata5.txt2']
     selected = 'text_automata.txt'
     
     print("What automata do you want to choose ?")
@@ -35,14 +35,21 @@ class FA:
 
 
     def is_deterministic(self):
-        if self.initial_states()[0] != 1:
+        if self.initial_states[0] != 1:
             return print("The automata is not deterministic because it has more than one initial state.")
-        for i in range(self.nb_transitions-1):
+        for i in range(int(self.nb_transitions)-1):
             if self.transitions[i][:1] == self.transitions[i+1][:1]:
                 return print("The automata is not deterministic because it has more than one transition for the same state and the same letter.")
+            else:
+                return print("true")
         return print("The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
     
-
+    def is_complete(self):
+        for i in range(self.nb_states[0]):
+            for j in range(int(self.alphabet_size)):
+                if not any(transition.startswith(str(i)+chr(97+j)) for transition in self.transitions):
+                    return print("The automata is not complete because it has at least one state that does not have a transition for at least one letter.")
+        return print("The automata is complete because all states have a transition for all letters.")
             
 
 
@@ -141,9 +148,8 @@ def main():
     print_FA(FA_used)
 
     FA_used.is_deterministic()
-    if not standardized_verif():
-        if Ask_for_standardization():
-            standardize_FA()
     
+    FA_used.is_complete()
+
 
 main()
