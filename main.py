@@ -1,5 +1,7 @@
 import os
 
+from matplotlib import lines
+
 def select_text_automata():
     automatas = []
     path='./automatons'
@@ -28,33 +30,27 @@ class FA:
         self.nb_transitions = nb_transitions
         self.transitions = transitions
 
-    
-    def Display_FA(self):
-        print("Alphabet size :", self.alphabet_size)
-        print("Number of states :", self.nb_states)
-        print("Initial states :", self.initial_states)
-        print("Final states :", self.final_states)
-        print("Number of transitions :", self.nb_transitions)
-        print("Transitions :")
-        for transition in self.transitions:
-            print(transition)
-
 
     def is_deterministic(self):
+        lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
         if self.initial_states[0] != 1:
             return print("The automata is not deterministic because it has more than one initial state.")
-        for i in range(int(self.nb_transitions)-1):
-            if self.transitions[i][:2] == self.transitions[i+1][:2]:
-                return print("The automata is not deterministic because it has more than one transition for the same state and the same letter.")
+        for i in range(self.nb_states):
+            for j in range(int(self.alphabet_size)):
+                if len(self.transitions[str(i)][lowercase_alphabet[j]]) > 1:    
+                    print("The automata is not deterministic because it has more than one transition for the same state and the same letter.")
+                    return False
         return print("The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
     
+
     def is_complete(self):
         for i in range(self.nb_states):
             for j in range(int(self.alphabet_size)):
                 if not any(transition.startswith(str(i)+chr(97+j)) for transition in self.transitions):
                     return print("The automata is not complete because it has at least one state that does not have a transition for at least one letter.")
         return print("The automata is complete because all states have a transition for all letters.")
-            
+
+
     def is_standard (self):
         if self.initial_states[0] != 1:
             return print("The automata is not standard because it has more than one initial state.")
@@ -62,7 +58,23 @@ class FA:
             if self.transitions[i][2] == '0':
                 return print("The automata is not standard because it has a transition to the initial state.")
         return print("The automata is standard because it has only one initial state and no transition to the initial state.")
-                
+
+
+    def determinize(self):
+
+        starting_state = ""
+        for character in self.initial_states[2][1:]:
+            if character != " ":
+                starting_state += character
+
+        new_states = [starting_state]
+
+
+
+        DFA = FA(self.alphabet_size, 0, (1, [int(starting_state)]), (0, []), 0, [])
+        
+        
+        
 def FA_create(selected:str) -> FA:
     with open(selected) as file:
         lines = [line.rstrip() for line in file]
@@ -79,7 +91,14 @@ def FA_create(selected:str) -> FA:
         if character != " ":
             ending_states_list.append(int(character))
 
-    imported_FA = FA(int(lines[0]), int(lines[1][0]), (int(lines[2][0]), starting_states_list), (int(lines[3][0]), ending_states_list), int(lines[4]), lines[5:])
+    lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
+    table = {str(i): {lowercase_alphabet[j]: [] for j in range(int(lines[0]))} for i in range(int(lines[1][0]))}
+    for trans in lines[5:]:
+        src, lettre, target = trans[0], trans[1], trans[2:]
+        if src in table and lettre in table[src]:
+            table[src][lettre].append(target)
+
+    imported_FA = FA(int(lines[0]), int(lines[1][0]), (int(lines[2][0]), starting_states_list), (int(lines[3][0]), ending_states_list), int(lines[4]), table)
 
     return imported_FA
 
@@ -98,12 +117,6 @@ def print_FA(FA:FA):
 
 def print_FA_table(FA:FA):
     lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
-    table = {str(i): {lowercase_alphabet[j]: [] for j in range(int(FA.alphabet_size))} for i in range(FA.nb_states)}
-    for trans in FA.transitions:
-        # trans ressemble à "0a1" -> src='0', lettre='a', target='1'
-        src, lettre, target = trans[0], trans[1], trans[2:]
-        if src in table and lettre in table[src]:
-            table[src][lettre].append(target)
 
     #prints header line
     print("\t","\t","\t",end='')
@@ -127,7 +140,7 @@ def print_FA_table(FA:FA):
         
         for j in range(int(FA.alphabet_size)):
             lettre = lowercase_alphabet[j]
-            targets = table[state_str][lettre]
+            targets = FA.transitions[state_str][lettre]
             
             if not targets:
                 cell_value = "--"
@@ -155,7 +168,6 @@ def Ask_for_standardization():
 def main():
     selected = select_text_automata()
     FA_used = FA_create(selected)
-    FA_used.Display_FA()
     print_FA(FA_used)
 
     FA_used.is_deterministic()
