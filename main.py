@@ -1,17 +1,14 @@
 import os
 
 def select_text_automata():
-<<<<<<< HEAD
     automatas = ['text_automata.txt','text_automata2.txt','text_automata3.txt','text_automata4.txt','text_automata5.txt2']
     selected = 'text_automata.txt'
-=======
     automatas = []
     path='./automatons'
     for file in os.scandir(path):
         if file.name.endswith('.txt'):
-            automatas.append(file.name)
+           automatas.append(file.name)
     selected = 'text_automatas.txt'
->>>>>>> 6fa0f10591425c8235b88f30e1c1aec5b7ac30e3
     
     print("What automata do you want to choose ?")
     print("selected :",selected)
@@ -56,7 +53,7 @@ class FA:
         return print("The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
     
     def is_complete(self):
-        for i in range(self.nb_states[0]):
+        for i in range(self.nb_states):
             for j in range(int(self.alphabet_size)):
                 if not any(transition.startswith(str(i)+chr(97+j)) for transition in self.transitions):
                     return print("The automata is not complete because it has at least one state that does not have a transition for at least one letter.")
@@ -87,7 +84,6 @@ def FA_create(selected:str) -> FA:
 
 
 
-
 def print_FA(FA:FA):
     print("Alphabet size :", FA.alphabet_size)
     print("Number of states :", FA.nb_states)
@@ -98,9 +94,10 @@ def print_FA(FA:FA):
     print_FA_table(FA)
     
     
+    
 def print_FA_table(FA:FA):
     lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
-    table = {str(i): {lowercase_alphabet[j]: [] for j in range(int(FA.alphabet_size))} for i in range(int(FA.nb_states[0]))}
+    table = {str(i): {lowercase_alphabet[j]: [] for j in range(int(FA.alphabet_size))} for i in range(FA.nb_states)}
     for trans in FA.transitions:
         # trans ressemble à "0a1" -> src='0', lettre='a', target='1'
         src, lettre, target = trans[0], trans[1], trans[2:]
@@ -113,7 +110,7 @@ def print_FA_table(FA:FA):
         print("|","\t",lowercase_alphabet[i],"\t",end='')
     print("|")
     print("---------","-" * (16 * (int(FA.alphabet_size) + 1)))
-    for i in range(int(FA.nb_states[0])):
+    for i in range(FA.nb_states):
         state_str = str(i)
         
         prefix = ""
