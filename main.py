@@ -1,17 +1,8 @@
 import os
 
 def select_text_automata():
-<<<<<<< HEAD
     automatas = ['text_automata.txt','text_automata2.txt','text_automata3.txt','text_automata4.txt','text_automata5.txt2']
     selected = 'text_automata.txt'
-=======
-    automatas = []
-    path='./automatons'
-    for file in os.scandir(path):
-        if file.name.endswith('.txt'):
-            automatas.append(file.name)
-    selected = 'text_automatas.txt'
->>>>>>> c51af6a113acca9de9ed9bf30389fd451279c14d
     
     print("What automata do you want to choose ?")
     print("selected :",selected)
@@ -81,9 +72,9 @@ def FA_create(selected:str) -> FA:
         if character != " ":
             ending_states_list.append(int(character))
 
-    FA1 = FA(lines[0], (int(lines[1][0]), starting_states_list), (int(lines[2][0]), ending_states_list), lines[3], lines[4], lines[5:])
+    imported_FA = FA(int(lines[0]), int(lines[1][0]), (int(lines[2][0]), starting_states_list), (int(lines[3][0]), ending_states_list), int(lines[4]), lines[5:])
 
-    return FA1
+    return imported_FA
 
 
 
@@ -145,7 +136,7 @@ def print_FA_table(FA:FA):
 def Ask_for_standardization():
     print("Do you want to standardize it ? (Y/N)")
     while True:
-        i=char(input())
+        i=chr(input())
         if i =='Y' or i=='y':
             return True
         if i =='N' or i =='n':
