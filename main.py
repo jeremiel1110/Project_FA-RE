@@ -2,7 +2,8 @@ import os
 
 def select_text_automata():
     automatas = []
-    for file in os.scandir('.'):
+    path='./automatons'
+    for file in os.scandir(path):
         if file.name.endswith('.txt'):
             automatas.append(file.name)
     selected = 'text_automatas.txt'
@@ -14,7 +15,7 @@ def select_text_automata():
         print(i,".  ",automatas[i],"")
 
     selected = automatas[int(input())]
-    return selected
+    return path+'/'+selected
 
 ############### DO NOT MODIFY ABOVE THIS LINE ###############
 
