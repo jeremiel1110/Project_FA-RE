@@ -1,8 +1,6 @@
 import os
 
 def select_text_automata():
-    automatas = ['text_automata.txt','text_automata2.txt','text_automata3.txt','text_automata4.txt','text_automata5.txt2']
-    selected = 'text_automata.txt'
     automatas = []
     path='./automatons'
     for file in os.scandir(path):
@@ -94,7 +92,7 @@ def print_FA(FA:FA):
     print_FA_table(FA)
     
     
-    
+
 def print_FA_table(FA:FA):
     lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
     table = {str(i): {lowercase_alphabet[j]: [] for j in range(int(FA.alphabet_size))} for i in range(FA.nb_states)}
