@@ -55,9 +55,14 @@ class FA:
                     return print("The automata is not complete because it has at least one state that does not have a transition for at least one letter.")
         return print("The automata is complete because all states have a transition for all letters.")
             
-
-
-
+    def is_standard (self):
+        if self.initial_states[0] != 1:
+            return print("The automata is not standard because it has more than one initial state.")
+        for i in range(int(self.nb_transitions)-1):
+            if self.transitions[i][2] == '0':
+                return print("The automata is not standard because it has a transition to the initial state.")
+        return print("The automata is standard because it has only one initial state and no transition to the initial state.")
+                
 def FA_create(selected:str) -> FA:
     with open(selected) as file:
         lines = [line.rstrip() for line in file]
@@ -143,7 +148,9 @@ def Ask_for_standardization():
             return True
         if i =='N' or i =='n':
             return False
-        else:  print("Answer not recognized try again")
+        else:  
+            print("Answer not recognized try again")
+
 
 def main():
     selected = select_text_automata()
@@ -154,6 +161,8 @@ def main():
     FA_used.is_deterministic()
     
     FA_used.is_complete()
+
+    FA_used.is_standard()
 
 
 main()
