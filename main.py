@@ -110,9 +110,9 @@ def print_FA_table(FA:FA):
         state_str = str(i)
         
         prefix = ""
-        if state_str in map(str, FA.initial_states): 
+        if state_str in map(str, FA.initial_states[1]): 
             prefix += "->"
-        if state_str in map(str, FA.final_states): 
+        if state_str in map(str, FA.final_states[1]): 
             prefix += "<-"
         
         
