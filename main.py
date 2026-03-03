@@ -62,8 +62,17 @@ def print_FA(FA:FA):
     print("Final states :", FA.final_states)
     print("Number of transitions :", FA.nb_transitions)
     print("Transition table :")
+    print_FA_table(FA)
+    
+    
+def print_FA_table(FA:FA):
     lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
     table = {str(i): {lowercase_alphabet[j]: [] for j in range(int(FA.alphabet_size))} for i in range(int(FA.nb_states))}
+    for trans in FA.transitions:
+        # trans ressemble à "0a1" -> src='0', lettre='a', target='1'
+        src, lettre, target = trans[0], trans[1], trans[2:]
+        if src in table and lettre in table[src]:
+            table[src][lettre].append(target)
 
     #prints header line
     print("\t","\t","\t",end='')
@@ -84,6 +93,7 @@ def print_FA(FA:FA):
         print(prefix, "\t", "|", "\t", state_str, end='\t') #affiche la 1ere cellulle a gauche avec état et fléche
         
         # Affichage des cellules pour chaque lettre
+        
         for j in range(int(FA.alphabet_size)):
             lettre = lowercase_alphabet[j]
             targets = table[state_str][lettre]
@@ -96,7 +106,7 @@ def print_FA(FA:FA):
             print("|", "\t", cell_value, "\t", end='')
         
         print("|") # Fin de ligne
-
+    
 
 
     
