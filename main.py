@@ -44,10 +44,8 @@ class FA:
         if self.initial_states[0] != 1:
             return print("The automata is not deterministic because it has more than one initial state.")
         for i in range(int(self.nb_transitions)-1):
-            if self.transitions[i][:1] == self.transitions[i+1][:1]:
+            if self.transitions[i][:2] == self.transitions[i+1][:2]:
                 return print("The automata is not deterministic because it has more than one transition for the same state and the same letter.")
-            else:
-                return print("true")
         return print("The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
     
     def is_complete(self):
@@ -67,12 +65,12 @@ def FA_create(selected:str) -> FA:
     # TEMP COMMENT
     # for starting states, to make them a tuple like (1, {0}) being (nb of starting states, {list of starting state})
     starting_states_list = []
-    for character in lines[1][1:]:
+    for character in lines[2][1:]:
         if character != " ":
             starting_states_list.append(int(character))
     #same for ending
     ending_states_list = []
-    for character in lines[2][1:]:
+    for character in lines[3][1:]:
         if character != " ":
             ending_states_list.append(int(character))
 
@@ -112,9 +110,9 @@ def print_FA_table(FA:FA):
         state_str = str(i)
         
         prefix = ""
-        if state_str in map(str, FA.initial_states): 
+        if state_str in map(str, FA.initial_states[1]): 
             prefix += "->"
-        if state_str in map(str, FA.final_states): 
+        if state_str in map(str, FA.final_states[1]): 
             prefix += "<-"
         
         
