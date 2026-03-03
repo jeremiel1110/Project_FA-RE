@@ -37,11 +37,13 @@ class FA:
     def is_deterministic(self):
         if self.initial_states()[0] != 1:
             return print("The automata is not deterministic because it has more than one initial state.")
-        for i in range(0,self.nb_transitions-1):
+        for i in range(self.nb_transitions-1):
             if self.transitions[i][:1] == self.transitions[i+1][:1]:
                 return print("The automata is not deterministic because it has more than one transition for the same state and the same letter.")
         return print("The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
     
+
+            
 
 
 
@@ -49,7 +51,20 @@ def FA_create(selected:str) -> FA:
     with open(selected) as file:
         lines = [line.rstrip() for line in file]
 
-    FA1 = FA(lines[0], lines[1], lines[2], lines[3], lines[4], lines[5:])
+    # TEMP COMMENT
+    # for starting states, to make them a tuple like (1, {0}) being (nb of starting states, {list of starting state})
+    starting_states_list = []
+    for character in lines[1][1:]:
+        if character != " ":
+            starting_states_list.append(int(character))
+    #same for ending
+    ending_states_list = []
+    for character in lines[2][1:]:
+        if character != " ":
+            ending_states_list.append(int(character))
+
+    FA1 = FA(lines[0], (int(lines[1][0]), starting_states_list), (int(lines[2][0]), ending_states_list), lines[3], lines[4], lines[5:])
+
     return FA1
 
 
@@ -67,7 +82,7 @@ def print_FA(FA:FA):
     
 def print_FA_table(FA:FA):
     lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
-    table = {str(i): {lowercase_alphabet[j]: [] for j in range(int(FA.alphabet_size))} for i in range(int(FA.nb_states))}
+    table = {str(i): {lowercase_alphabet[j]: [] for j in range(int(FA.alphabet_size))} for i in range(int(FA.nb_states[0]))}
     for trans in FA.transitions:
         # trans ressemble à "0a1" -> src='0', lettre='a', target='1'
         src, lettre, target = trans[0], trans[1], trans[2:]
@@ -80,7 +95,7 @@ def print_FA_table(FA:FA):
         print("|","\t",lowercase_alphabet[i],"\t",end='')
     print("|")
     print("---------","-" * (16 * (int(FA.alphabet_size) + 1)))
-    for i in range(int(FA.nb_states)):
+    for i in range(int(FA.nb_states[0])):
         state_str = str(i)
         
         prefix = ""
@@ -109,7 +124,15 @@ def print_FA_table(FA:FA):
     
 
 
-    
+def Ask_for_standardization():
+    print("Do you want to standardize it ? (Y/N)")
+    while True:
+        i=char(input())
+        if i =='Y' or i=='y':
+            return True
+        if i =='N' or i =='n':
+            return False
+        else:  print("Answer not recognized try again")
 
 def main():
     selected = select_text_automata()
@@ -118,5 +141,9 @@ def main():
     print_FA(FA_used)
 
     FA_used.is_deterministic()
+    if not standardized_verif():
+        if Ask_for_standardization():
+            standardize_FA()
+    
 
 main()
