@@ -1,12 +1,22 @@
+import os
+
 def select_text_automata():
-    available_automatas:list[str] = ['text_automata.txt']
-    selected:str = 'text_automata.txt'
+    automatas = []
+    path='./automatons'
+    for file in os.scandir(path):
+        if file.name.endswith('.txt'):
+           automatas.append(file.name)
+    selected = 'text_automatas.txt'
+    
     print("What automata do you want to choose ?")
     print("selected :",selected)
-    for i in range(len(available_automatas)):
-        print(i,".  ",available_automatas[i])
-    selected = available_automatas[int(input())]
-    return selected
+
+    for i in range(len(automatas)):
+        print(i,".  ",automatas[i],"")
+
+    selected = automatas[int(input())]
+    return path+'/'+selected
+
 
 class FA:
     def __init__(self, alphabet_size:int, nb_states:int, initial_states:tuple, final_states:tuple, nb_transitions:int, transitions:list):
@@ -61,9 +71,9 @@ class FA:
             state_str = str(i)
             
             prefix = ""
-            if state_str in map(str, self.initial_states): 
+            if state_str in map(str, self.initial_states[1]): 
                 prefix += "->"
-            if state_str in map(str, self.final_states): 
+            if state_str in map(str, self.final_states[1]): 
                 prefix += "<-"
             
             
@@ -76,7 +86,7 @@ class FA:
                 targets = table[state_str][lettre]
                 
                 if not targets:
-                    cell_value = "--"
+                    cell_value = "-"
                 else:
                     cell_value = ",".join(targets)
                 
@@ -84,11 +94,29 @@ class FA:
             
             print("|") # Fin de ligne
 
+    def is_deterministic(self):
+        if self.initial_states[0] != 1:
+            return print("The automata is not deterministic because it has more than one initial state.")
+        for i in range(int(self.nb_transitions)-1):
+            if self.transitions[i][:2] == self.transitions[i+1][:2]:
+                return print("The automata is not deterministic because it has more than one transition for the same state and the same letter.")
+        return print("The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
+        
+    def is_complete(self):
+        for i in range(self.nb_states):
+            for j in range(int(self.alphabet_size)):
+                if not any(transition.startswith(str(i)+chr(97+j)) for transition in self.transitions):
+                    return print("The automata is not complete because it has at least one state that does not have a transition for at least one letter.")
+        return print("The automata is complete because all states have a transition for all letters.")
+
+
 def main():
-    selected = "automatons/text_automata.txt"
+    selected = select_text_automata()
     FiniteAutomaton = FA.import_FA(selected)
     FiniteAutomaton.print_info()
     FiniteAutomaton.display_FA()
+    FiniteAutomaton.is_deterministic()
+    FiniteAutomaton.is_complete()
 
 if __name__ == "__main__":
     main()

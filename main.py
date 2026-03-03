@@ -53,11 +53,13 @@ class FA:
 
     def is_standard (self):
         if self.initial_states[0] != 1:
-            return print("The automata is not standard because it has more than one initial state.")
+            print("The automata is not standard because it has more than one initial state.")
+            return False
         for i in range(int(self.nb_transitions)-1):
             if self.transitions[i][2] == '0':
-                return print("The automata is not standard because it has a transition to the initial state.")
-        return print("The automata is standard because it has only one initial state and no transition to the initial state.")
+                print("The automata is not standard because it has a transition to the initial state.")
+                return False
+        print("The automata is standard because it has only one initial state and no transition to the initial state.")
 
 
     def determinize(self):
@@ -74,6 +76,7 @@ class FA:
         DFA = FA(self.alphabet_size, 0, (1, [int(starting_state)]), (0, []), 0, [])
         
         
+        return True
         
 def FA_create(selected:str) -> FA:
     with open(selected) as file:
@@ -174,7 +177,12 @@ def main():
     
     FA_used.is_complete()
 
-    FA_used.is_standard()
+    if not FA_used.is_standard():
+        if Ask_for_standardization():
+            SFA=standardization(FA_used)
+            
+
+
 
 
 main()
