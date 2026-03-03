@@ -1,6 +1,7 @@
 def select_text_automata():
     automatas = ['text_automata.txt']
     selected = 'text_automata.txt'
+    
     print("What automata do you want to choose ?")
     print("selected :",selected)
 
@@ -33,8 +34,7 @@ class FA:
             print(transition)
 
 
-
-def FA_reader(selected:str) -> FA:
+def FA_create(selected:str) -> FA:
     with open(selected) as file:
         lines = [line.rstrip() for line in file]
 
@@ -44,7 +44,7 @@ def FA_reader(selected:str) -> FA:
 
 def main():
     selected = select_text_automata()
-    FA_used = FA_reader(selected)
+    FA_used = FA_create(selected)
     FA_used.Display_FA()
 
 main()
