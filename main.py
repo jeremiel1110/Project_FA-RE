@@ -109,7 +109,15 @@ def print_FA_table(FA:FA):
     
 
 
-    
+def Ask_for_standardization():
+    print("Do you want to standardize it ? (Y/N)")
+    while True:
+        i=char(input())
+        if i =='Y' or i=='y':
+            return True
+        if i =='N' or i =='n':
+            return False
+        else:  print("Answer not recognized try again")
 
 def main():
     selected = select_text_automata()
@@ -118,5 +126,9 @@ def main():
     print_FA(FA_used)
 
     FA_used.is_deterministic()
+    if not standardized_verif():
+        if Ask_for_standardization():
+            standardize_FA()
+    
 
 main()
