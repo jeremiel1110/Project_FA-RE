@@ -82,7 +82,7 @@ def print_FA(FA:FA):
     
 def print_FA_table(FA:FA):
     lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
-    table = {str(i): {lowercase_alphabet[j]: [] for j in range(int(FA.alphabet_size))} for i in range(int(FA.nb_states))}
+    table = {str(i): {lowercase_alphabet[j]: [] for j in range(int(FA.alphabet_size))} for i in range(int(FA.nb_states[0]))}
     for trans in FA.transitions:
         # trans ressemble à "0a1" -> src='0', lettre='a', target='1'
         src, lettre, target = trans[0], trans[1], trans[2:]
@@ -95,7 +95,7 @@ def print_FA_table(FA:FA):
         print("|","\t",lowercase_alphabet[i],"\t",end='')
     print("|")
     print("---------","-" * (16 * (int(FA.alphabet_size) + 1)))
-    for i in range(int(FA.nb_states)):
+    for i in range(int(FA.nb_states[0])):
         state_str = str(i)
         
         prefix = ""
