@@ -1,17 +1,12 @@
 import os
 
 def select_text_automata():
-<<<<<<< HEAD
-    automatas = ['text_automata.txt','text_automata2.txt','text_automata3.txt','text_automata4.txt','text_automata5.txt2']
-    selected = 'text_automata.txt'
-=======
     automatas = []
     path='./automatons'
     for file in os.scandir(path):
         if file.name.endswith('.txt'):
             automatas.append(file.name)
     selected = 'text_automatas.txt'
->>>>>>> 6fa0f10591425c8235b88f30e1c1aec5b7ac30e3
     
     print("What automata do you want to choose ?")
     print("selected :",selected)
