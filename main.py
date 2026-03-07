@@ -63,21 +63,66 @@ class FA:
         print("The automata is standard because it has only one initial state and no transition to the initial state.")
 
 
-    def determinize(self):
+    def determinize(self): #we'll create each elt of a FA one by one
 
-        starting_state = ""
-        for character in self.initial_states[2][1:]:
-            if character != " ":
-                starting_state += character
+        #starting_states
+        n_starting_state = ""
+        for character in self.initial_states[1]:
+            n_starting_state += str(character)+","
+        n_starting_state = n_starting_state[:-1] #to remove the last comma
 
-        new_states = [starting_state]
+        #transitions
+        n_states = {n_starting_state: {chr(i + ord('a')): [] for i in range(int(self.alphabet_size))}}
+        n_transitions = {}
+        states_to_process = [n_starting_state]
+
+        i=0
+        while i<len(states_to_process):                     #iterate until we have processed all the states
+            current_state = states_to_process[i]
+            for letter in range(int(self.alphabet_size)):   #create the transition possibilities for each letter
+                transition = ""
+                transition_elements = []
+                for states in current_state.split(","):     #split the current state into elements
+                    if states != "":                        #to avoid empty states
+                        for character in self.transitions[states][chr(letter + ord('a'))]: #transitions for each letters
+                            if character not in transition_elements and character != "": #to avoid duplicates and empty states
+                                transition_elements.append(character)
+
+                for element in transition_elements:          #format correctly
+                    transition += element+","
+                transition = transition[:-1] #to remove the last comma
+                print("transition :", transition)
+
+
+                if transition not in n_states.keys() and transition != "":
+                    n_states[transition] = {chr(i + ord('a')): [] for i in range(int(self.alphabet_size))}
+                    states_to_process.append(transition)
+
+                n_transitions.setdefault(current_state, {})[chr(letter + ord('a'))] = transition
+
+                for trs in n_transitions:
+                        print(n_transitions[trs],",",trs)
+            i+=1
+
+        n_nb_states = len(n_states)
+
+        #nb_transitions
+        n_nb_transitions = len(n_transitions) * int(self.alphabet_size)
+
+
+        #final states
+        n_final_states = (0, [])
+        for state in n_states.keys():
+            for element in state.split(","):
+                print("element :", element," in ", self.final_states[1])
+                if element in self.final_states[1]:
+                    n_final_states = (n_final_states[0]+1, n_final_states[1] + [state])
 
 
 
-        DFA = FA(self.alphabet_size, 0, (1, [int(starting_state)]), (0, []), 0, [])
-        
-        
-        return True
+        DFA = FA(self.alphabet_size, n_nb_states, (1, [n_starting_state]), n_final_states, n_nb_transitions, n_transitions)
+
+        return DFA
         
 def FA_create(selected:str) -> FA:
     with open(selected) as file:
@@ -88,12 +133,12 @@ def FA_create(selected:str) -> FA:
     starting_states_list = []
     for character in lines[2][1:]:
         if character != " ":
-            starting_states_list.append(int(character))
+            starting_states_list.append(str(character))
     #same for ending
     ending_states_list = []
     for character in lines[3][1:]:
         if character != " ":
-            ending_states_list.append(int(character))
+            ending_states_list.append(str(character))
 
     lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
     table = {str(i): {lowercase_alphabet[j]: [] for j in range(int(lines[0]))} for i in range(int(lines[1][0]))}
@@ -143,13 +188,19 @@ def print_FA_table(FA:FA):
         # Affichage des cellules pour chaque lettre
         
         for j in range(int(FA.alphabet_size)):
+
             lettre = lowercase_alphabet[j]
             targets = FA.transitions[state_str][lettre]
-            
-            if not targets:
+
+            cell_value = ""
+            if len(targets) == 0:
                 cell_value = "--"
             else:
-                cell_value = ",".join(targets)
+                for k in range(len(targets)):
+                    if targets[k] != ",":
+                        cell_value += ""+targets[k]+","
+                cell_value = cell_value[:-1] #to remove the last comma
+
             
             print("|", "\t", cell_value, "\t", end='')
         
@@ -174,14 +225,16 @@ def main():
     FA_used = FA_create(selected)
     print_FA(FA_used)
 
-    FA_used.is_deterministic()
+#    FA_used.is_deterministic()
     
-    FA_used.is_complete()
+#    FA_used.is_complete()
 
-    if not FA_used.is_standard():
-        if Ask_for_standardization():
-            SFA=standardization(FA_used)
-            
+#    if not FA_used.is_standard():
+#        if Ask_for_standardization():
+#            SFA=standardization(FA_used)
+
+    determinized_FA = FA_used.determinize()
+    print_FA(determinized_FA)
 
 
 
