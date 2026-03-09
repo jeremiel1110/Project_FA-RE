@@ -118,7 +118,10 @@ class FA:
                 if element in self.final_states[1]:
                     n_final_states = (n_final_states[0]+1, n_final_states[1] + [state])
 
-
+        #transformation of every state into a unique number AND complete
+        for i in range(n_nb_states):
+            
+        
 
         DFA = FA(self.alphabet_size, n_nb_states, (1, [n_starting_state]), n_final_states, n_nb_transitions, n_transitions)
 
