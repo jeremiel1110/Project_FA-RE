@@ -120,6 +120,10 @@ class FA:
 
         #transformation of every state into a unique number AND complete
         #renaming in integers to avoid confusion
+        temp_transitions = {}
+        for state in n_transitions.keys():
+            temp_transitions[state] = n_transitions[state]
+ 
         list_of_states = list(n_transitions.keys())
         for i in range(n_nb_states):
             for j in range(n_nb_states):
@@ -127,6 +131,8 @@ class FA:
                     if n_transitions[list_of_states[j]][chr(letter + ord('a'))] == list_of_states[i]:
                         n_transitions[list_of_states[j]][chr(letter + ord('a'))] = i   
             n_transitions[list_of_states[i]] = n_transitions.pop(list_of_states[i])
+
+        
 
         #changing integers back into str for format consistency
         list_of_states = list(n_transitions.keys())
@@ -143,8 +149,9 @@ class FA:
                 print(list_of_states[j],",",letter)
                 if n_transitions[list_of_states[j]][chr(letter + ord('a'))] == "":
                     n_transitions[list_of_states[j]][chr(letter + ord('a'))] = "P"  
-        n_states["P"] = {chr(i + ord('a')): "P" for i in range(int(self.alphabet_size))} #add the new state P        
+        n_transitions["P"] = {chr(i + ord('a')): "P" for i in range(int(self.alphabet_size))} #add the new state P        
 
+        print(n_transitions)
 
         DFA = FA(self.alphabet_size, n_nb_states, (1, [n_starting_state]), n_final_states, n_nb_transitions, n_transitions)
 
@@ -199,6 +206,7 @@ def print_FA_table(FA:FA):
         print("|","\t",lowercase_alphabet[i],"\t",end='')
     print("|")
     print("---------","-" * (16 * (int(FA.alphabet_size) + 1)))
+
     for i in range(FA.nb_states):
         state_str = str(i)
         
@@ -208,7 +216,6 @@ def print_FA_table(FA:FA):
         if state_str in map(str, FA.final_states[1]): 
             prefix += "<-"
         
-        
         print(prefix, "\t", "|", "\t", state_str, end='\t') #affiche la 1ere cellulle a gauche avec état et fléche
         
         # Affichage des cellules pour chaque lettre
@@ -217,7 +224,6 @@ def print_FA_table(FA:FA):
 
             lettre = lowercase_alphabet[j]
             targets = FA.transitions[state_str][lettre]
-
             cell_value = ""
             if len(targets) == 0:
                 cell_value = "--"
