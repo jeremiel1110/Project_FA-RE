@@ -3,7 +3,7 @@ from matplotlib import lines
 
 def select_text_automata():
     automatas = []
-    print("Current Working Directory:", os.getcwd())
+    # print("Current Working Directory:", os.getcwd()) # debugging working directory issues
     path='Project_FA-RE/automatons'
     for file in os.scandir(path):
         if file.name.endswith('.txt'):
@@ -28,7 +28,7 @@ class FA:
         self.initial_states = initial_states
         self.final_states = final_states
         self.nb_transitions = nb_transitions
-        self.transitions = transitions
+        self.transitions = transitions 
 
 
     def is_deterministic(self):
@@ -73,7 +73,7 @@ class FA:
 
         #transitions
         n_states = {n_starting_state: {chr(i + ord('a')): [] for i in range(int(self.alphabet_size))}}
-        n_transitions = {}
+        n_transitions: dict[str, dict[str, Literal[''] | Unknown] | None] = {}
         states_to_process = [n_starting_state]
 
         i=0
@@ -199,33 +199,54 @@ def print_FA(FA:FA):
 
 def print_FA_table(FA:FA):
     lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
-
+    
+    # Get actual state names from transitions dictionary instead of assuming 0,1,2,...
+    state_names = list(FA.transitions.keys())
     #prints header line
     print("\t","\t","\t",end='')
     for i in range(int(FA.alphabet_size)): 
         print("|","\t",lowercase_alphabet[i],"\t",end='')
     print("|")
     print("---------","-" * (16 * (int(FA.alphabet_size) + 1)))
-
-    for i in range(FA.nb_states):
-        state_str = str(i)
+    
+    for state_str in state_names:
+        print(state_str)
         
         prefix = ""
-        if state_str in map(str, FA.initial_states[1]): 
-            prefix += "->"
-        if state_str in map(str, FA.final_states[1]): 
-            prefix += "<-"
+        # Check if this state is an initial state
+        for initial in FA.initial_states[1]:
+            if str(initial) == state_str or state_str == str(initial):
+                prefix += "->"
+                break
         
-        print(prefix, "\t", "|", "\t", state_str, end='\t') #affiche la 1ere cellulle a gauche avec état et fléche
+        # Check if this state is a final state
+        for final in FA.final_states[1]:
+            if str(final) == state_str or state_str == str(final):
+                prefix += "<-"
+                break
+        # Also check if any element of the compound state is a final state
+        if "<-" not in prefix:
+            for element in state_str.split(","):
+                for final in FA.final_states[1]:
+                    if str(final) == element:
+                        prefix += "<-"
+                        break
+                if "<-" in prefix:
+                    break
+        print(prefix, "\t", "|", "\t", state_str, end='\t') # printing data for the 1st column (starting or last final state and the state number)
         
-        # Affichage des cellules pour chaque lettre
+        # printing value for each cell
         
         for j in range(int(FA.alphabet_size)):
 
             lettre = lowercase_alphabet[j]
             targets = FA.transitions[state_str][lettre]
             cell_value = ""
-            if len(targets) == 0:
+            if targets == "" or targets is None:
+                cell_value = "--"
+            elif isinstance(targets, str):
+                cell_value = targets
+            elif len(targets) == 0:
                 cell_value = "--"
             else:
                 for k in range(len(targets)):
@@ -236,8 +257,7 @@ def print_FA_table(FA:FA):
             
             print("|", "\t", cell_value, "\t", end='')
         
-        print("|") # Fin de ligne
-    
+        print("|") # end line
 
 
 def Ask_for_standardization():
