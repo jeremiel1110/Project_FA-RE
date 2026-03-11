@@ -133,6 +133,16 @@ class FA:
         DFA = FA(self.alphabet_size, n_nb_states, (1, [n_starting_state]), n_final_states, n_nb_transitions, n_transitions)
 
         return DFA
+    
+    def completing(self):
+        list_of_states = list(self.transitions.keys())
+        for j in range(self.nb_states):
+            for letter in range(int(self.alphabet_size)):
+                print(list_of_states[j],",",letter)
+                if self.transitions[list_of_states[j]][chr(letter + ord('a'))] == "":
+                    self.transitions[list_of_states[j]][chr(letter + ord('a'))] = "P"  
+        self.transitions["P"] = {chr(i + ord('a')): "P" for i in range(int(self.alphabet_size))} #add the new state P        
+        return self
         
 def FA_create(selected:str) -> FA:
     with open(selected) as file:
