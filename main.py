@@ -4,7 +4,7 @@ from matplotlib import lines
 def select_text_automata():
     automatas = []
     # print("Current Working Directory:", os.getcwd()) # debugging working directory issues
-    path='Project_FA-RE/automatons'
+    path='./automatons'
     for file in os.scandir(path):
         if file.name.endswith('.txt'):
            automatas.append(file.name)
@@ -73,7 +73,7 @@ class FA:
 
         #transitions
         n_states = {n_starting_state: {chr(i + ord('a')): [] for i in range(int(self.alphabet_size))}}
-        n_transitions: dict[str, dict[str, Literal[''] | Unknown] | None] = {}
+        n_transitions = {}
         states_to_process = [n_starting_state]
 
         i=0
