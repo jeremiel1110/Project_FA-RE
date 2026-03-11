@@ -1,10 +1,10 @@
 import os
-
 from matplotlib import lines
 
 def select_text_automata():
     automatas = []
-    path='./automatons'
+    print("Current Working Directory:", os.getcwd())
+    path='Project_FA-RE/automatons'
     for file in os.scandir(path):
         if file.name.endswith('.txt'):
            automatas.append(file.name)
