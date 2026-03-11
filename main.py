@@ -210,7 +210,6 @@ def print_FA_table(FA:FA):
     print("---------","-" * (16 * (int(FA.alphabet_size) + 1)))
     
     for state_str in state_names:
-        print(state_str)
         
         prefix = ""
         # Check if this state is an initial state
@@ -218,7 +217,6 @@ def print_FA_table(FA:FA):
             if str(initial) == state_str or state_str == str(initial):
                 prefix += "->"
                 break
-        
         # Check if this state is a final state
         for final in FA.final_states[1]:
             if str(final) == state_str or state_str == str(final):
@@ -233,6 +231,7 @@ def print_FA_table(FA:FA):
                         break
                 if "<-" in prefix:
                     break
+                
         print(prefix, "\t", "|", "\t", state_str, end='\t') # printing data for the 1st column (starting or last final state and the state number)
         
         # printing value for each cell
