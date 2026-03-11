@@ -118,29 +118,6 @@ class FA:
                 if element in self.final_states[1]:
                     n_final_states = (n_final_states[0]+1, n_final_states[1] + [state])
 
-        #transformation of every state into a unique number AND complete
-        #renaming in integers to avoid confusion
-        temp_transitions = {}
-        for state in n_transitions.keys():
-            temp_transitions[state] = n_transitions[state]
- 
-        list_of_states = list(n_transitions.keys())
-        for i in range(n_nb_states):
-            for j in range(n_nb_states):
-                for letter in range(int(self.alphabet_size)):
-                    if n_transitions[list_of_states[j]][chr(letter + ord('a'))] == list_of_states[i]:
-                        n_transitions[list_of_states[j]][chr(letter + ord('a'))] = i   
-            n_transitions[list_of_states[i]] = n_transitions.pop(list_of_states[i])
-
-        
-
-        #changing integers back into str for format consistency
-        list_of_states = list(n_transitions.keys())
-        for i in range(n_nb_states):
-            n_transitions[str(list_of_states[i])] = n_transitions.pop(list_of_states[i])
-            for letter in range(int(self.alphabet_size)):
-                n_transitions[str(list_of_states[i])][chr(letter + ord('a'))] = str(n_transitions[str(list_of_states[i])][chr(letter + ord('a'))])    
-
 
         #completing
         list_of_states = list(n_transitions.keys())
