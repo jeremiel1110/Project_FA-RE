@@ -247,6 +247,25 @@ def Ask_for_standardization():
         else:  
             print("Answer not recognized try again")
 
+def complementary(self):
+    nb_states = self.nb_states
+    final_states = self.final_states
+    final_states_list = final_states[1]
+
+    states_list = []
+    for state in range(int(nb_states)):
+        states_list.append(state)
+
+    complementary_list = []
+    for state in range(int(nb_states)):
+        if str(state) not in final_states_list:
+            complementary_list.append(state)
+    
+    complementary_final_states = (nb_states - final_states[0], complementary_list)
+
+    CFA = FA(
+        self.alphabet_size, self.nb_states, self.initial_states, complementary_final_states, self.nb_transitions, self.transitions)
+    return CFA
 
 def main():
     selected = select_text_automata()
@@ -261,10 +280,11 @@ def main():
 #        if Ask_for_standardization():
 #            SFA=standardization(FA_used)
 
-    determinized_FA = FA_used.determinize()
-    print_FA(determinized_FA)
+#    determinized_FA = FA_used.determinize()
+#    print_FA(determinized_FA)
 
-
+    CFA = complementary(FA_used)
+    print_FA(CFA)
 
 
 main()
