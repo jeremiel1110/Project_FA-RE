@@ -263,8 +263,7 @@ def complementary(self):
     
     complementary_final_states = (nb_states - final_states[0], complementary_list)
 
-    CFA = FA(
-        self.alphabet_size, self.nb_states, self.initial_states, complementary_final_states, self.nb_transitions, self.transitions)
+    CFA = FA(self.alphabet_size, self.nb_states, self.initial_states, complementary_final_states, self.nb_transitions, self.transitions)
     return CFA
 
 def main():
