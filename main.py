@@ -133,7 +133,38 @@ class FA:
         DFA = FA(self.alphabet_size, n_nb_states, (1, [n_starting_state]), n_final_states, n_nb_transitions, n_transitions)
 
         return DFA
+    
+    def completing(self):
+        list_of_states = list(self.transitions.keys())
+        n_transitions = self.transitions
+        for j in range(self.nb_states):
+            for letter in range(int(self.alphabet_size)):
+                print(list_of_states[j],",",letter)
+                if self.transitions[list_of_states[j]][chr(letter + ord('a'))] == "":
+                    n_transitions[list_of_states[j]][chr(letter + ord('a'))] = "P"  
+        n_transitions["P"] = {chr(i + ord('a')): "P" for i in range(int(self.alphabet_size))} #add the new state P        
         
+        CFA = FA(self.alphabet_size, self.nb_states+1, self.initial_states, self.final_states, self.nb_transitions+2, n_transitions)
+
+        return CFA
+        
+    def standardize(self):
+        n_starting_state = "S"
+        n_transitions = self.transitions
+        n_transitions[n_starting_state] = {chr(i + ord('a')): "" for i in range(int(self.alphabet_size))}
+        for initial in self.initial_states[1]:
+            for letter in range(int(self.alphabet_size)):
+                transition = ""
+                for character in n_transitions[str(initial)][chr(letter + ord('a'))]: #transitions for each letters
+                    if character != "": #to avoid empty states
+                        transition += str(character)+","
+                transition = transition[:-1] #to remove the last comma
+                n_transitions[n_starting_state][chr(letter + ord('a'))] = transition    
+
+        SFA = FA(self.alphabet_size, self.nb_states+1, (1, [n_starting_state]), self.final_states, self.nb_transitions, n_transitions)
+        
+        return SFA
+
 def FA_create(selected:str) -> FA:
     with open(selected) as file:
         lines = [line.rstrip() for line in file]
@@ -151,11 +182,11 @@ def FA_create(selected:str) -> FA:
             ending_states_list.append(str(character))
 
     lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
-    table = {str(i): {lowercase_alphabet[j]: [] for j in range(int(lines[0]))} for i in range(int(lines[1][0]))}
+    table = {str(i): {lowercase_alphabet[j]: "" for j in range(int(lines[0]))} for i in range(int(lines[1][0]))}
     for trans in lines[5:]:
         src, lettre, target = trans[0], trans[1], trans[2:]
         if src in table and lettre in table[src]:
-            table[src][lettre].append(target)
+            table[src][lettre] = target
 
     imported_FA = FA(int(lines[0]), int(lines[1][0]), (int(lines[2][0]), starting_states_list), (int(lines[3][0]), ending_states_list), int(lines[4]), table)
 
@@ -282,8 +313,10 @@ def main():
 #    determinized_FA = FA_used.determinize()
 #    print_FA(determinized_FA)
 
-    CFA = complementary(FA_used)
-    print_FA(CFA)
+    standardized_FA = FA_used.standardize()
+    print_FA(standardized_FA)
+
+
 
 
 main()
