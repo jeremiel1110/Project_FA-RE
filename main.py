@@ -1,5 +1,4 @@
 import os
-from matplotlib import lines
 
 def select_text_automata():
     automatas = []
@@ -152,18 +151,37 @@ class FA:
         n_starting_state = "S"
         n_transitions = self.transitions
         n_transitions[n_starting_state] = {chr(i + ord('a')): "" for i in range(int(self.alphabet_size))}
-        for initial in self.initial_states[1]:
-            for letter in range(int(self.alphabet_size)):
-                transition = ""
+        for letter in range(int(self.alphabet_size)):
+            transition = ""
+            for initial in self.initial_states[1]:
                 for character in n_transitions[str(initial)][chr(letter + ord('a'))]: #transitions for each letters
-                    if character != "": #to avoid empty states
+                    if character != "" and character not in transition: #to avoid empty states
                         transition += str(character)+","
-                transition = transition[:-1] #to remove the last comma
-                n_transitions[n_starting_state][chr(letter + ord('a'))] = transition    
+                    print("transition :", transition)
+            transition = transition[:-1] #to remove the last comma
+            n_transitions[n_starting_state][chr(letter + ord('a'))] = transition    
 
         SFA = FA(self.alphabet_size, self.nb_states+1, (1, [n_starting_state]), self.final_states, self.nb_transitions, n_transitions)
         
         return SFA
+    
+    
+    def complementary(self):
+        final_states_list = {str(state) for state in self.final_states[1]}
+        states_list = list(self.transitions.keys())
+
+        complementary_list = []
+        for state in states_list:
+            if str(state) not in final_states_list:
+                complementary_list.append(state)
+
+        complementary_final_states = (len(complementary_list), complementary_list)
+
+        CFA = FA(self.alphabet_size, self.nb_states, self.initial_states, complementary_final_states, self.nb_transitions, self.transitions)
+        return CFA
+    
+    
+    
 
 def FA_create(selected:str) -> FA:
     with open(selected) as file:
@@ -278,24 +296,7 @@ def Ask_for_standardization():
         else:  
             print("Answer not recognized try again")
 
-def complementary(self):
-    nb_states = self.nb_states
-    final_states = self.final_states
-    final_states_list = final_states[1]
 
-    states_list = []
-    for state in range(int(nb_states)):
-        states_list.append(state)
-
-    complementary_list = []
-    for state in range(int(nb_states)):
-        if str(state) not in final_states_list:
-            complementary_list.append(state)
-    
-    complementary_final_states = (nb_states - final_states[0], complementary_list)
-
-    CFA = FA(self.alphabet_size, self.nb_states, self.initial_states, complementary_final_states, self.nb_transitions, self.transitions)
-    return CFA
 
 def main():
     selected = select_text_automata()
@@ -310,12 +311,14 @@ def main():
 #        if Ask_for_standardization():
 #            SFA=standardization(FA_used)
 
-#    determinized_FA = FA_used.determinize()
-#    print_FA(determinized_FA)
+    determinized_FA = FA_used.determinize()
+    print_FA(determinized_FA)
 
     standardized_FA = FA_used.standardize()
     print_FA(standardized_FA)
-
+    
+    CFA = FA_used.complementary()
+    print_FA(CFA)
 
 
 
