@@ -180,8 +180,10 @@ class FA:
         CFA = FA(self.alphabet_size, self.nb_states, self.initial_states, complementary_final_states, self.nb_transitions, self.transitions)
         return CFA
     
-    
-    
+    def recognize_word(self, word:str):
+        DFA = self.determinize()
+        current_state = DFA.initial_states[1][0] #start from the initial state
+
 
 def FA_create(selected:str) -> FA:
     with open(selected) as file:
