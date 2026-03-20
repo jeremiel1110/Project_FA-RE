@@ -1,4 +1,7 @@
+from time import time
 import os
+import sys
+import time
 
 def select_text_automata():
     automatas = []
@@ -39,7 +42,8 @@ class FA:
                 if len(self.transitions[str(i)][lowercase_alphabet[j]]) > 1:    
                     print("The automata is not deterministic because it has more than one transition for the same state and the same letter.")
                     return False
-        return print("The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
+        print("The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
+        return True
     
 
     def is_complete(self):
@@ -47,7 +51,8 @@ class FA:
             for j in range(int(self.alphabet_size)):
                 if len(self.transitions[str(i)][chr(j + ord('a'))]) == 0:
                     return print("The automata is not complete because it has at least one state that does not have a transition for at least one letter.")
-        return print("The automata is complete because all states have a transition for all letters.")
+        print("The automata is complete because all states have a transition for all letters.")
+        return True
 
 
     def is_standard (self):
@@ -60,6 +65,7 @@ class FA:
                     print("The automata is not standard because it has a transition to the initial state.")
                     return False
         print("The automata is standard because it has only one initial state and no transition to the initial state.")
+        return True
 
 
     def determinize(self): #we'll create each elt of a FA one by one
@@ -287,41 +293,71 @@ def print_FA_table(FA:FA):
         print("|") # end line
 
 
-def Ask_for_standardization():
-    print("Do you want to standardize it ? (Y/N)")
-    while True:
-        i=chr(input())
-        if i =='Y' or i=='y':
-            return True
-        if i =='N' or i =='n':
-            return False
-        else:  
-            print("Answer not recognized try again")
-
 
 
 def main():
-    selected = select_text_automata()
-    FA_used = FA_create(selected)
-    print_FA(FA_used)
+    debug=False
+    if len(sys.argv) > 1 and sys.argv[1]=="--debug":
+        debug=True
+    if not debug:
+        selected = select_text_automata()
+        FA_used = FA_create(selected)
+        print_FA(FA_used)
 
-#    FA_used.is_deterministic()
-    
-#    FA_used.is_complete()
+    #    FA_used.is_deterministic()
+        
+    #    FA_used.is_complete()
 
-#    if not FA_used.is_standard():
-#        if Ask_for_standardization():
-#            SFA=standardization(FA_used)
-
-    determinized_FA = FA_used.determinize()
-    print_FA(determinized_FA)
-
-    standardized_FA = FA_used.standardize()
-    print_FA(standardized_FA)
-    
-    CFA = FA_used.complementary()
-    print_FA(CFA)
+        if FA_used.is_standard == False :
+            print("Do you want to standardize it ?")
+            if char(input())=='Y'|'y'|'yes'|'YES'|'Yes':
+                Standardized_FA=FA_used.standardize
 
 
+        determinized_FA = FA_used.determinize()
+        print_FA(determinized_FA)
+
+        standardized_FA = FA_used.standardize()
+        print_FA(standardized_FA)
+        
+        CFA = FA_used.complementary()
+        print_FA(CFA)
+
+    if debug :
+        with open("debug_ouput_"+str(time.ctime())+".debug",'w') as f:
+            sys.stdout=f
+            path='./automatons'
+            for file in os.scandir(path):
+                if file.name.endswith('.txt'):
+                    current = path+'/'+file.name
+                    print("----------------CURRENT AUTOMATA : ",current,"----------------")
+                    FA_used=FA_create(current)
+                    print_FA(FA_used)
+                    FA_used.is_deterministic()
+                    FA_used.is_complete() 
+                    FA_used.is_standard()
+                    FA_Standardize=FA_used.standardize()
+                    print("----------------STANDARDIZED AUTOMATA----------------")
+                    print_FA(FA_Standardize)
+                    FA_Complete=FA_used.completing()
+                    print("----------------COMPLETED AUTOMATA----------------")
+                    print_FA(FA_Complete)
+                    if FA_used.is_complete() and FA_used.is_standard() == False :
+                        FA_determinized=FA_used.determinize()
+                        print("----------------DETERMINIZED AUTOMATA----------------")
+                        print_FA(FA_determinized)
+                    #FA_completementary=FA_determinized.complementary()
+                    print("----------------COMPLEMENTARY AUTOMATA----------------")
+                    #print(FA_completementary)
+                    #FA_completmentary.recognize_word
+                    print("-----------------------------------------\t\t NEXT AUTOMATA\t\t-----------------------------------------")
 
 main()
+
+            
+
+
+
+
+
+
