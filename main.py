@@ -10,6 +10,7 @@ def select_text_automata():
     for file in os.scandir(path):
         if file.name.endswith('.txt'):
            automatas.append(file.name)
+    automatas = sorted(automatas, key=lambda x: int(''.join(filter(str.isdigit, x)) or 0))
     selected = 'text_automatas.txt'
     
     print("What automata do you want to choose ?")
@@ -242,35 +243,41 @@ def print_FA(FA:FA):
     
 
 def print_FA_table(FA:FA):
-    lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
+    lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)]
     has_epsilon = any('*' in FA.transitions[s] for s in FA.transitions)
-
-    # Get actual state names from transitions dictionary instead of assuming 0,1,2,...
     state_names = list(FA.transitions.keys())
-    #prints header line
-    print("\t","\t","\t",end='')
-    for i in range(int(FA.alphabet_size)):
-        print("|","\t",lowercase_alphabet[i],"\t",end='')
+
+    letters_to_print = [lowercase_alphabet[j] for j in range(int(FA.alphabet_size))]
     if has_epsilon:
-        print("|","\t","*","\t",end='')
-    print("|")
-    total_cols = int(FA.alphabet_size) + (1 if has_epsilon else 0)
-    print("---------","-" * (16 * (total_cols + 1)))
-    
+        letters_to_print.append('*')
+
+    # Compute column width to fit the longest state name or cell value
+    all_vals = list(state_names)
     for state_str in state_names:
-        
+        for lettre in letters_to_print:
+            t = FA.transitions[state_str].get(lettre, "")
+            all_vals.append(t if t else "--")
+    col_w = max(6, max(len(str(v)) for v in all_vals) + 2)
+    prefix_w = 4  # max is "-><-"
+
+    # Header
+    print(f"{'':>{prefix_w}} | {'':^{col_w}}", end='')
+    for l in letters_to_print:
+        print(f" | {l:^{col_w}}", end='')
+    print(" |")
+    sep_len = prefix_w + 3 + col_w + (col_w + 3) * len(letters_to_print) + 2
+    print("-" * sep_len)
+
+    for state_str in state_names:
         prefix = ""
-        # Check if this state is an initial state
         for initial in FA.initial_states[1]:
-            if str(initial) == state_str or state_str == str(initial):
+            if str(initial) == state_str:
                 prefix += "->"
                 break
-        # Check if this state is a final state
         for final in FA.final_states[1]:
-            if str(final) == state_str or state_str == str(final):
+            if str(final) == state_str:
                 prefix += "<-"
                 break
-        # Also check if any element of the compound state is a final state
         if "<-" not in prefix:
             for element in state_str.split(","):
                 for final in FA.final_states[1]:
@@ -279,14 +286,8 @@ def print_FA_table(FA:FA):
                         break
                 if "<-" in prefix:
                     break
-                
-        print(prefix, "\t", "|", "\t", state_str, end='\t') # printing data for the 1st column (starting or last final state and the state number)
-        
-        # printing value for each cell
-        
-        letters_to_print = [lowercase_alphabet[j] for j in range(int(FA.alphabet_size))]
-        if has_epsilon:
-            letters_to_print.append('*')
+
+        print(f"{prefix:>{prefix_w}} | {state_str:^{col_w}}", end='')
 
         for lettre in letters_to_print:
             targets = FA.transitions[state_str].get(lettre, "")
@@ -301,11 +302,11 @@ def print_FA_table(FA:FA):
                 for k in range(len(targets)):
                     if targets[k] != ",":
                         cell_value += ""+targets[k]+","
-                cell_value = cell_value[:-1] #to remove the last comma
+                cell_value = cell_value[:-1]
 
-            print("|", "\t", cell_value, "\t", end='')
+            print(f" | {cell_value:^{col_w}}", end='')
 
-        print("|") # end line
+        print(" |")
 
 
 
@@ -342,30 +343,34 @@ def main():
         with open("debug_ouput_"+str(time.ctime())+".debug",'w') as f:
             sys.stdout=f
             path='./automatons'
+            available_list=[]
             for file in os.scandir(path):
                 if file.name.endswith('.txt'):
-                    current = path+'/'+file.name
-                    print("----------------CURRENT AUTOMATA : ",current,"----------------")
-                    FA_used=FA_create(current)
-                    print_FA(FA_used)
-                    FA_used.is_deterministic()
-                    FA_used.is_complete() 
-                    FA_used.is_standard()
-                    FA_Standardize=FA_used.standardize()
-                    print("----------------STANDARDIZED AUTOMATA----------------")
-                    print_FA(FA_Standardize)
-                    FA_Complete=FA_used.completing()
-                    print("----------------COMPLETED AUTOMATA----------------")
-                    print_FA(FA_Complete)
-                    if FA_used.is_complete() and FA_used.is_standard() == False :
-                        FA_determinized=FA_used.determinize()
-                        print("----------------DETERMINIZED AUTOMATA----------------")
-                        print_FA(FA_determinized)
-                    #FA_completementary=FA_determinized.complementary()
-                    print("----------------COMPLEMENTARY AUTOMATA----------------")
-                    #print(FA_completementary)
-                    #FA_completmentary.recognize_word
-                    print("-----------------------------------------\t\t NEXT AUTOMATA\t\t-----------------------------------------")
+                    available_list.append(file.name)
+            available_list = sorted(available_list, key=lambda x: int(''.join(filter(str.isdigit, x)) or 0))
+            for i in range(0,len(available_list)):
+                current = path+'/'+available_list[i]
+                print("----------------CURRENT AUTOMATA : ",current,"----------------")
+                FA_used=FA_create(current)
+                print_FA(FA_used)
+                FA_used.is_deterministic()
+                FA_used.is_complete() 
+                FA_used.is_standard()
+                FA_Standardize=FA_used.standardize()
+                print("----------------STANDARDIZED AUTOMATA----------------")
+                print_FA(FA_Standardize)
+                FA_Complete=FA_used.completing()
+                print("----------------COMPLETED AUTOMATA----------------")
+                print_FA(FA_Complete)
+                if FA_used.is_complete() and FA_used.is_standard() == False :
+                    FA_determinized=FA_used.determinize()
+                    print("----------------DETERMINIZED AUTOMATA----------------")
+                    print_FA(FA_determinized)
+                #FA_completementary=FA_determinized.complementary()
+                print("----------------COMPLEMENTARY AUTOMATA----------------")
+                #print(FA_completementary)
+                #FA_completmentary.recognize_word
+                print("-----------------------------------------\t\t NEXT AUTOMATA\t\t-----------------------------------------")
 
 main()
 
