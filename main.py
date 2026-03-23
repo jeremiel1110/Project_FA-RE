@@ -3,6 +3,8 @@ import os
 import sys
 import time
 
+from numpy import partition
+
 def select_text_automata():
     automatas = []
     # print("Current Working Directory:", os.getcwd()) # debugging working directory issues
@@ -190,6 +192,134 @@ class FA:
     def recognize_word(self, word:str):
         DFA = self.determinize()
         current_state = DFA.initial_states[1][0] #start from the initial state
+
+        for character in word:
+            if ord(character) < ord('a') or ord(character) >= ord('a') + int(DFA.alphabet_size):
+                print("No")
+                return False
+
+            if character not in DFA.transitions[current_state]:
+                print("No")
+                return False
+            next_state = DFA.transitions[current_state][character]
+
+            if next_state == "":
+                print("No")
+                return False
+            current_state = next_state
+        
+        if current_state in DFA.final_states[1]:
+            print("Yes")
+            return True
+        
+        print("No")
+        return False
+
+def minimize(self):
+    DFA = self.determinize()
+    
+    print("------ MINIMIZATION ------")
+
+    states = list(DFA.transitions.keys())
+    alphabet = [chr(i + ord('a')) for i in range(int(DFA.alphabet_size))]
+    final_states = set(str(state) for state in DFA.final_states[1])
+    non_final_states = set(states) - final_states
+
+    partitions = []
+    if len(non_final_states) > 0:
+        partitions.append(non_final_states)
+    if len(final_states) > 0:
+        partitions.append(final_states)
+
+    def print_partitions(parts, step):
+        
+        print("Partition ", step, ":")
+        for i in range(len(parts)):
+            print("P" + str(i),"=", sorted(list((parts[i]))))
+    print_partitions(partitions, 0)
+
+    changed = True
+    step = 1
+
+    while changed:
+        changed = False
+        new_partitions = []
+
+        for group in partitions:
+            signatures = {} 
+
+            for state in group:
+                signature = {}
+
+                for letter in alphabet:
+                    target = DFA.transitions[state][letter]
+
+                    target_group = -1
+                    for i in range(len(partitions)):
+                        if target in partitions[i]:
+                            target_group = i
+                            break
+                    
+                    signature.append(target_group)
+                signature = tuple(signature)    
+                if signature not in signatures:
+                    signatures[signature] = set()
+                signatures[signature].add(state)
+
+            if len(signatures) > 1:
+                changed = True
+
+                for sig in signatures:
+                    new_partitions.append(signatures[sig])
+        partitions = new_partitions
+        print_partitions(partitions, step)
+        step += 1
+
+    if len(partitions) == len(states):
+        print("The automaton is already minimal.")
+    
+    state_to_group = {}
+    for i in range(len(partitions)):
+        for state in partitions[i]:
+            state_to_group[state] = str(i)
+
+    print("State correspondence table :")
+    for i in range(len(partitions)):
+            print(str(i), "->", sorted(list(partitions[i])))
+
+    n_transitions = {}
+    for i in range(len(partitions)):
+        representative = list(partitions[i])[0]
+        n_transitions[str(i)] = {}
+
+        print("Transitions for group", i, "based on state", representative, ":")
+
+        for letter in alphabet:
+            target = DFA.transitions[representative][letter]
+            n_transitions[str(i)][letter] = state_to_group[target]
+            print("  ", str(i), "--", letter, "-->", state_to_group[target])
+        
+    n_initial_state = state_to_group[DFA.initial_states[1][0]]
+    n_final_states_list = []
+
+    for i in range(len(partitions)):
+            group_name = str(i)
+            for state in partitions[i]:
+                if state in final_states:
+                    n_final_states_list.append(group_name)
+                    break
+
+    MCDFA = FA(
+        DFA.alphabet_size,
+        len(partitions),
+        (1, [n_initial_state]),
+        (len(n_final_states_list), n_final_states_list),
+        len(partitions) * int(DFA.alphabet_size),
+        n_transitions
+    )
+
+    return MCDFA
+
 
 
 def FA_create(selected:str) -> FA:
