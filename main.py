@@ -195,26 +195,36 @@ def FA_create(selected:str) -> FA:
     with open(selected) as file:
         lines = [line.rstrip() for line in file]
 
+    epsilon_here = any(len(trans) >= 2 and trans[1] == '*' for trans in lines[5:] if trans)
+
     # TEMP COMMENT
     # for starting states, to make them a tuple like (1, {0}) being (nb of starting states, {list of starting state})
-    starting_states_list = []
-    for character in lines[2][1:]:
-        if character != " ":
-            starting_states_list.append(str(character))
+    starting_parts = lines[2].split()
+    starting_states_list = starting_parts[1:]
     #same for ending
-    ending_states_list = []
-    for character in lines[3][1:]:
-        if character != " ":
-            ending_states_list.append(str(character))
+    ending_parts = lines[3].split()
+    ending_states_list = ending_parts[1:]
 
     lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
-    table = {str(i): {lowercase_alphabet[j]: "" for j in range(int(lines[0]))} for i in range(int(lines[1][0]))}
+    alpha_keys = {lowercase_alphabet[j]: "" for j in range(int(lines[0]))}
+    if epsilon_here:
+        alpha_keys['*'] = ""
+
+    table = {str(i): dict(alpha_keys) for i in range(int(lines[1]))}
+
     for trans in lines[5:]:
-        src, lettre, target = trans[0], trans[1], trans[2:]
+        if not trans:
+            continue
+        letter_idx = next((i for i, c in enumerate(trans) if not c.isdigit()), None)
+        if letter_idx is None:
+            continue
+        src = trans[:letter_idx]
+        lettre = trans[letter_idx]
+        target = trans[letter_idx + 1:]
         if src in table and lettre in table[src]:
             table[src][lettre] = target
 
-    imported_FA = FA(int(lines[0]), int(lines[1][0]), (int(lines[2][0]), starting_states_list), (int(lines[3][0]), ending_states_list), int(lines[4]), table)
+    imported_FA = FA(int(lines[0]), int(lines[1]), (int(starting_parts[0]), starting_states_list), (int(ending_parts[0]), ending_states_list), int(lines[4]), table)
 
     return imported_FA
 
@@ -233,15 +243,19 @@ def print_FA(FA:FA):
 
 def print_FA_table(FA:FA):
     lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
-    
+    has_epsilon = any('*' in FA.transitions[s] for s in FA.transitions)
+
     # Get actual state names from transitions dictionary instead of assuming 0,1,2,...
     state_names = list(FA.transitions.keys())
     #prints header line
     print("\t","\t","\t",end='')
-    for i in range(int(FA.alphabet_size)): 
+    for i in range(int(FA.alphabet_size)):
         print("|","\t",lowercase_alphabet[i],"\t",end='')
+    if has_epsilon:
+        print("|","\t","*","\t",end='')
     print("|")
-    print("---------","-" * (16 * (int(FA.alphabet_size) + 1)))
+    total_cols = int(FA.alphabet_size) + (1 if has_epsilon else 0)
+    print("---------","-" * (16 * (total_cols + 1)))
     
     for state_str in state_names:
         
@@ -270,10 +284,12 @@ def print_FA_table(FA:FA):
         
         # printing value for each cell
         
-        for j in range(int(FA.alphabet_size)):
+        letters_to_print = [lowercase_alphabet[j] for j in range(int(FA.alphabet_size))]
+        if has_epsilon:
+            letters_to_print.append('*')
 
-            lettre = lowercase_alphabet[j]
-            targets = FA.transitions[state_str][lettre]
+        for lettre in letters_to_print:
+            targets = FA.transitions[state_str].get(lettre, "")
             cell_value = ""
             if targets == "" or targets is None:
                 cell_value = "--"
@@ -287,9 +303,8 @@ def print_FA_table(FA:FA):
                         cell_value += ""+targets[k]+","
                 cell_value = cell_value[:-1] #to remove the last comma
 
-            
             print("|", "\t", cell_value, "\t", end='')
-        
+
         print("|") # end line
 
 
