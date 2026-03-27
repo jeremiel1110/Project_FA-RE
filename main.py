@@ -357,7 +357,7 @@ def FA_create(selected:str) -> FA:
 
     imported_FA = FA(int(lines[0]), int(lines[1]), (int(starting_parts[0]), starting_states_list), (int(ending_parts[0]), ending_states_list), int(lines[4]), table)
 
-    return imported_FA
+    return imported_FA, epsilon_here
 
 
 
@@ -447,9 +447,12 @@ def main():
         debug=True
     if not debug:
         selected = select_text_automata()
-        FA_used = FA_create(selected)
+        FA_used,asyncronous = FA_create(selected) #we get the automata and if it is asyncronous or not
         print_FA(FA_used)
-
+        if asyncronous : #if it's asyncronous we do something (epsuilon closure) so that the rest can run without any issue
+            pass
+        else : #else we don't do shit and teh proggram continue
+            pass
     #    FA_used.is_deterministic()
         
     #    FA_used.is_complete()
