@@ -40,14 +40,29 @@ class FA:
 
 
     def is_deterministic(self):
-        lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
+        alphabet = [chr(i + ord('a')) for i in range(int(self.alphabet_size))]
+
+        # Check number of initial states
         if self.initial_states[0] != 1:
-            return print("Is it deterministic? The automata is not deterministic because it has more than one initial state.")
-        for i in range(self.nb_states):
-            for j in range(int(self.alphabet_size)):
-                if len(self.transitions[str(i)][lowercase_alphabet[j]]) > 1:    
+            print("Is it deterministic? The automata is not deterministic because it has more than one initial state.")
+            return False
+
+        # Loop over REAL states, not range(nb_states)
+        for state in self.transitions:
+            for letter in alphabet:
+                cell = self.transitions[state][letter]
+
+                # Empty = OK
+                if cell == "" or cell is None:
+                    continue
+
+                # Split transitions
+                targets = [t.strip() for t in cell.split(",") if t.strip() != ""]
+
+                if len(targets) > 1:
                     print("Is it deterministic? The automata is not deterministic because it has more than one transition for the same state and the same letter.")
                     return False
+
         print("Is it deterministic? The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
         return True
     
@@ -57,6 +72,7 @@ class FA:
             for j in range(int(self.alphabet_size)):
                 if len(self.transitions[str(i)][chr(j + ord('a'))]) == 0:
                     return print("Is it complete? The automata is not complete because it has at least one state that does not have a transition for at least one letter.")
+                    return False
         print("Is it complete? The automata is complete because all states have a transition for all letters.")
         return True
 
@@ -285,15 +301,30 @@ class FA:
         return False
 
     def minimize(self):
-        DFA = self.determinize()
+        """
+        Minimize the automaton.
+        The project expects minimization on a complete deterministic automaton.
+        If needed, this method first determinizes and completes the automaton.
+        """
 
         print("------ MINIMIZATION ------")
 
-        states = list(DFA.transitions.keys())
-        alphabet = [chr(i + ord('a')) for i in range(int(DFA.alphabet_size))]
-        final_states = set(str(state) for state in DFA.final_states[1])
+        # Step 1: obtain a complete deterministic automaton
+        working_FA = self
+
+        if not working_FA.is_deterministic():
+            working_FA = working_FA.determinize()
+
+        if not working_FA.is_complete():
+            working_FA = working_FA.completing()
+
+        states = list(working_FA.transitions.keys())
+        alphabet = [chr(i + ord('a')) for i in range(int(working_FA.alphabet_size))]
+
+        final_states = set(str(state) for state in working_FA.final_states[1])
         non_final_states = set(states) - final_states
 
+        # Initial partition: final / non-final
         partitions = []
         if len(non_final_states) > 0:
             partitions.append(non_final_states)
@@ -307,6 +338,7 @@ class FA:
 
         print_partitions(partitions, 0)
 
+        # Step 2: refine partitions until stable
         changed = True
         step = 1
 
@@ -321,7 +353,7 @@ class FA:
                     signature = []
 
                     for letter in alphabet:
-                        target = DFA.transitions[state][letter]
+                        target = working_FA.transitions[state][letter]
 
                         target_group = -1
                         for i in range(len(partitions)):
@@ -335,6 +367,7 @@ class FA:
 
                     if signature not in signatures:
                         signatures[signature] = set()
+
                     signatures[signature].add(state)
 
                 if len(signatures) > 1:
@@ -347,10 +380,12 @@ class FA:
             print_partitions(partitions, step)
             step += 1
 
+        # Already minimal
         if len(partitions) == len(states):
             print("The automaton is already minimal.")
-            return DFA
+            return working_FA
 
+        # Step 3: correspondence state -> group
         state_to_group = {}
         for i in range(len(partitions)):
             for state in partitions[i]:
@@ -360,7 +395,9 @@ class FA:
         for i in range(len(partitions)):
             print(str(i), "->", sorted(list(partitions[i])))
 
+        # Step 4: build minimized transitions
         n_transitions = {}
+
         for i in range(len(partitions)):
             representative = list(partitions[i])[0]
             n_transitions[str(i)] = {}
@@ -368,13 +405,15 @@ class FA:
             print("Transitions for group", i, "based on state", representative, ":")
 
             for letter in alphabet:
-                target = DFA.transitions[representative][letter]
+                target = working_FA.transitions[representative][letter]
                 n_transitions[str(i)][letter] = state_to_group[target]
                 print(" ", str(i), "--", letter, "-->", state_to_group[target])
 
-        n_initial_state = state_to_group[DFA.initial_states[1][0]]
-        n_final_states_list = []
+        # Step 5: initial state
+        n_initial_state = state_to_group[working_FA.initial_states[1][0]]
 
+        # Step 6: final states
+        n_final_states_list = []
         for i in range(len(partitions)):
             group_name = str(i)
             for state in partitions[i]:
@@ -382,21 +421,24 @@ class FA:
                     n_final_states_list.append(group_name)
                     break
 
+        # Step 7: count transitions
+        n_nb_transitions = 0
+        for state in n_transitions:
+            for letter in n_transitions[state]:
+                if n_transitions[state][letter] != "":
+                    n_nb_transitions += 1
+
         MCDFA = FA(
-            DFA.alphabet_size,
+            working_FA.alphabet_size,
             len(partitions),
             (1, [n_initial_state]),
             (len(n_final_states_list), n_final_states_list),
-            len(partitions) * int(DFA.alphabet_size),
+            n_nb_transitions,
             n_transitions
         )
 
         return MCDFA
     
-
-
-
-
 
     def synchronize(self):
     # transform an asynchronous FA into an equivalent synchronous FA
