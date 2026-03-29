@@ -1,3 +1,4 @@
+from multiprocessing.util import debug
 from time import time
 import os
 import sys
@@ -639,75 +640,95 @@ def main():
         """
 
 
-        def loop():
-            keepGoing = True
+    def loop():
+        keepGoing = True
 
-            while keepGoing:
+        while keepGoing:
 
+            selected = select_text_automata()
+            print("")
+            FA_selected, asyncronous = FA_create(selected)
 
-                # print("What FA do you want to read ?")
-                selected = select_text_automata()
+            print_FA_table(FA_selected)
+            print("")
+
+            if asyncronous:
+                print("This automaton contains epsilon transitions.")
+                print("Epsilon-closure of each state:")
+                closures = FA_selected.all_epsilon_closures()
+                for state in closures:
+                    print("E(", state, ") =", closures[state])
                 print("")
-                FA_selected, asyncronous = FA_create(selected)
-                
+
+                print("Here is the equivalent synchronous automaton:")
+                FA_selected = FA_selected.synchronize()
                 print_FA_table(FA_selected)
                 print("")
 
-                if asyncronous: #if it's asyncronous we do something (epsuilon closure) so that the rest can run without any issue
-                    print("This automaton contains epsilon transitions.")
-                    print("Epsilon-closure of each state:")
-                    closures = FA_selected.all_epsilon_closures()
-                    for state in closures:
-                        print("E(", state, ") =", closures[state])
-                    print("")
+            deterministic = FA_selected.is_deterministic()
+            print("")
 
-                    print("Here is the equivalent synchronous automaton:")
-                    FA_selected = FA_selected.synchronize()
-                    print_FA_table(FA_selected)
-                    print("")
+            complete = FA_selected.is_complete()
+            print("")
 
-                    asyncronous = False
-                else:
-                    pass
-    
-                deterministic = FA_selected.is_deterministic()
-                print("")
+            standard = FA_selected.is_standard()
+            print("")
 
-                complete = FA_selected.is_complete()
-                print("")
-
-                if not deterministic or not complete:
-                    print("Do you want to obtain an equivalent complete deterministic FA ? (y, Y, yes, Yes, YES)")
-                    if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
-                        if not deterministic:
-                            FA_selected = FA_selected.determinize()
-                        elif not complete:
-                            FA_selected = FA_selected.completing()
-
-                    print_FA_table(FA_selected)
-                    print("")
-
-                standard = FA_selected.is_standard()
-                print("")
-
-                if not standard:
-                    print("Do you want to standardize it ? (y, Y, yes, Yes, YES)")
-                    if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
-                        FA_selected = FA_selected.standardize()
-                        print_FA_table(FA_selected)
-                        print("")
-
-                print("Here is the equivalent minimal automaton")
-                FA_selected = FA_selected.minimize()
-                print_FA_table(FA_selected)
-                print("")
-
-                print("Do you want to construct an automaton recognizing the complementary language ? (y, Y, yes, Yes, YES)")
+            if not standard:
+                print("Do you want to standardize it ? (y, Y, yes, Yes, YES)")
                 if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
-                    FA_selected = FA_selected.complementary()
+                    FA_selected = FA_selected.standardize()
                     print_FA_table(FA_selected)
-                print("")
+                    print("")
 
+                    deterministic = FA_selected.is_deterministic()
+                    print("")
+
+                    complete = FA_selected.is_complete()
+                    print("")
+
+                    standard = FA_selected.is_standard()
+                    print("")
+
+            CDFA = FA_selected
+
+            if not deterministic or not complete:
+                print("Do you want to obtain an equivalent complete deterministic FA ? (y, Y, yes, Yes, YES)")
+                if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+
+                    if not deterministic:
+                        CDFA = CDFA.determinize()
+
+                    need_completion = False
+                    for state in CDFA.transitions:
+                        for j in range(int(CDFA.alphabet_size)):
+                            letter = chr(j + ord('a'))
+                            if CDFA.transitions[state][letter] == "":
+                                need_completion = True
+
+                    if need_completion:
+                        CDFA = CDFA.completing()
+
+                    print("Here is the equivalent complete deterministic automaton:")
+                    print_FA_table(CDFA)
+                    print("")
+                else:
+                    CDFA = FA_selected
+
+            print("Here is the equivalent minimal automaton")
+            if deterministic and complete:
+                FA_selected = FA_selected.minimize()
+            elif CDFA != FA_selected:
+                FA_selected = CDFA.minimize()
+            else:
+                print("Minimization requires a complete deterministic automaton.")
+                FA_selected = None
+
+            if FA_selected is not None:
+                print_FA_table(FA_selected)
+            print("")
+
+            if FA_selected is not None:
                 print("Do you want to do the word recognition test ? (y, Y, yes, Yes, YES)")
                 if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
                     print("Enter a word to test it (type \"end\" to stop the test):")
@@ -716,16 +737,21 @@ def main():
                         FA_selected.recognize_word(word)
                         word = input()
                 print("")
-                
 
-                print("Do you want to choose a new automaton ? (y, Y, yes, Yes, YES)")
+                print("Do you want to construct an automaton recognizing the complementary language ? (y, Y, yes, Yes, YES)")
                 if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
-                    keepGoing = True
-                else:
-                    keepGoing = False
+                    FA_selected = FA_selected.complementary()
+                    print_FA_table(FA_selected)
                 print("")
 
-        loop()
+            print("Do you want to choose a new automaton ? (y, Y, yes, Yes, YES)")
+            if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+                keepGoing = True
+            else:
+                keepGoing = False
+            print("")
+
+    loop()
 
 
     if debug :
@@ -784,11 +810,5 @@ def main():
                 print("-----------------------------------------\t\t NEXT AUTOMATA\t\t-----------------------------------------")
 
 main()
-
-            
-
-
-
-
 
 
