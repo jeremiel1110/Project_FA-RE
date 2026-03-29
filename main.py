@@ -130,86 +130,116 @@ class FA:
         return closures
 
 
-    def determinize(self):
-        # Helper: convert "", "1", "1,3" into a sorted list without duplicates
-        def parse_targets(targets):
-            if targets == "" or targets is None:
-                return []
-            if isinstance(targets, str):
-                return sorted(set(t.strip() for t in targets.split(",") if t.strip() != ""))
-            if isinstance(targets, list):
-                return sorted(set(str(t).strip() for t in targets if str(t).strip() != ""))
-            return []
+    def minimize(self):
+        # Minimize the current automaton as it is.
+        # This function assumes the automaton is already deterministic and complete.
 
-        # Initial DFA state = set of initial NFA states
-        initial_set = sorted(set(str(s) for s in self.initial_states[1]))
-        initial_name = ",".join(initial_set)
+        print("------ MINIMIZATION ------")
 
+        states = list(self.transitions.keys())
         alphabet = [chr(i + ord('a')) for i in range(int(self.alphabet_size))]
 
-        dfa_transitions = {}
-        seen_states = set()
-        states_to_process = [initial_name]
+        final_states = set(str(state) for state in self.final_states[1])
+        non_final_states = set(states) - final_states
 
-        seen_states.add(initial_name)
+        partitions = []
+        if len(non_final_states) > 0:
+            partitions.append(non_final_states)
+        if len(final_states) > 0:
+            partitions.append(final_states)
 
-        while states_to_process:
-            current_name = states_to_process.pop(0)
-            current_states = [s for s in current_name.split(",") if s != ""]
+        def print_partitions(parts, step):
+            print("Partition", step, ":")
+            for i in range(len(parts)):
+                print("P" + str(i), "=", sorted(list(parts[i])))
 
-            dfa_transitions[current_name] = {}
+        print_partitions(partitions, 0)
+
+        changed = True
+        step = 1
+
+        while changed:
+            changed = False
+            new_partitions = []
+
+            for group in partitions:
+                signatures = {}
+
+                for state in group:
+                    signature = []
+
+                    for letter in alphabet:
+                        target = self.transitions[state][letter]
+
+                        target_group = -1
+                        for i in range(len(partitions)):
+                            if target in partitions[i]:
+                                target_group = i
+                                break
+
+                        signature.append(target_group)
+
+                    signature = tuple(signature)
+
+                    if signature not in signatures:
+                        signatures[signature] = set()
+                    signatures[signature].add(state)
+
+                if len(signatures) > 1:
+                    changed = True
+
+                for sig in signatures:
+                    new_partitions.append(signatures[sig])
+
+            partitions = new_partitions
+            print_partitions(partitions, step)
+            step += 1
+
+        if len(partitions) == len(states):
+            print("The automaton is already minimal.")
+            return self
+
+        state_to_group = {}
+        for i in range(len(partitions)):
+            for state in partitions[i]:
+                state_to_group[state] = str(i)
+
+        print("State correspondence table:")
+        for i in range(len(partitions)):
+            print(str(i), "->", sorted(list(partitions[i])))
+
+        n_transitions = {}
+        for i in range(len(partitions)):
+            representative = list(partitions[i])[0]
+            n_transitions[str(i)] = {}
+
+            print("Transitions for group", i, "based on state", representative, ":")
 
             for letter in alphabet:
-                next_states = set()
+                target = self.transitions[representative][letter]
+                n_transitions[str(i)][letter] = state_to_group[target]
+                print(" ", str(i), "--", letter, "-->", state_to_group[target])
 
-                for state in current_states:
-                    if state in self.transitions:
-                        targets = self.transitions[state].get(letter, "")
-                        for target in parse_targets(targets):
-                            next_states.add(target)
+        n_initial_state = state_to_group[str(self.initial_states[1][0])]
+        n_final_states_list = []
 
-                if len(next_states) == 0:
-                    dfa_transitions[current_name][letter] = "P"
-                else:
-                    next_name = ",".join(sorted(next_states))
-                    dfa_transitions[current_name][letter] = next_name
+        for i in range(len(partitions)):
+            group_name = str(i)
+            for state in partitions[i]:
+                if state in final_states:
+                    n_final_states_list.append(group_name)
+                    break
 
-                    if next_name not in seen_states:
-                        seen_states.add(next_name)
-                        states_to_process.append(next_name)
-
-        # Add sink state P if needed
-        need_sink = any(
-            dfa_transitions[state][letter] == "P"
-            for state in dfa_transitions
-            for letter in alphabet
-        )
-
-        if need_sink:
-            dfa_transitions["P"] = {letter: "P" for letter in alphabet}
-            seen_states.add("P")
-
-        # Final states: any DFA state containing at least one NFA final state
-        original_finals = set(str(s) for s in self.final_states[1])
-        dfa_finals = []
-
-        for state_name in seen_states:
-            if state_name == "P":
-                continue
-            components = state_name.split(",")
-            if any(comp in original_finals for comp in components):
-                dfa_finals.append(state_name)
-
-        DFA = FA(
+        MCDFA = FA(
             self.alphabet_size,
-            len(seen_states),
-            (1, [initial_name]),
-            (len(dfa_finals), sorted(dfa_finals)),
-            len(seen_states) * int(self.alphabet_size),
-            dfa_transitions
+            len(partitions),
+            (1, [n_initial_state]),
+            (len(n_final_states_list), n_final_states_list),
+            len(partitions) * int(self.alphabet_size),
+            n_transitions
         )
 
-        return DFA
+        return MCDFA
     
     def completing(self):
         list_of_states = list(self.transitions.keys())
@@ -638,9 +668,10 @@ def print_FA_table(FA:FA):
 
 
 def main():
-    debug=False
-    if len(sys.argv) > 1 and sys.argv[1]=="--debug":
-        debug=True
+    debug = False
+    if len(sys.argv) > 1 and sys.argv[1] == "--debug":
+        debug = True
+
     if not debug:
         """
         selected = select_text_automata()
@@ -676,174 +707,204 @@ def main():
         """
 
 
-    def loop():
-        keepGoing = True
+        def loop():
+            keepGoing = True
 
-        while keepGoing:
+            while keepGoing:
 
-            selected = select_text_automata()
-            print("")
-            FA_selected, asynchronous = FA_create(selected)
-
-            print_FA_table(FA_selected)
-            print("")
-
-            if asynchronous:
-                print("This automaton contains epsilon transitions.")
-                print("Epsilon-closure of each state:")
-                closures = FA_selected.all_epsilon_closures()
-                for state in closures:
-                    print("E(", state, ") =", closures[state])
+                selected = select_text_automata()
                 print("")
+                FA_selected, asyncronous = FA_create(selected)
 
-                print("Here is the equivalent synchronous automaton:")
-                FA_selected = FA_selected.synchronize()
                 print_FA_table(FA_selected)
                 print("")
 
-            deterministic = FA_selected.is_deterministic()
-            print("")
-
-            complete = FA_selected.is_complete()
-            print("")
-
-            standard = FA_selected.is_standard()
-            print("")
-
-            if not standard:
-                print("Do you want to standardize it ? (y, Y, yes, Yes, YES)")
-                if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
-                    FA_selected = FA_selected.standardize()
-                    print_FA_table(FA_selected)
-                    print("")
-
-                    deterministic = FA_selected.is_deterministic()
-                    print("")
-
-                    complete = FA_selected.is_complete()
-                    print("")
-
-                    standard = FA_selected.is_standard()
-                    print("")
-
-            CDFA = FA_selected
-
-            if not deterministic or not complete:
-                print("Do you want to obtain an equivalent complete deterministic FA ? (y, Y, yes, Yes, YES)")
-                if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
-
-                    if not deterministic:
-                        CDFA = CDFA.determinize()
-
-                    need_completion = False
-                    for state in CDFA.transitions:
-                        for j in range(int(CDFA.alphabet_size)):
-                            letter = chr(j + ord('a'))
-                            if CDFA.transitions[state][letter] == "":
-                                need_completion = True
-
-                    if need_completion:
-                        CDFA = CDFA.completing()
-
-                    print("Here is the equivalent complete deterministic automaton:")
-                    print_FA_table(CDFA)
-                    print("")
-                else:
-                    CDFA = FA_selected
-
-            print("Here is the equivalent minimal automaton")
-            if deterministic and complete:
-                FA_selected = FA_selected.minimize()
-            elif CDFA != FA_selected:
-                FA_selected = CDFA.minimize()
-            else:
-                print("Minimization requires a complete deterministic automaton.")
-                FA_selected = None
-
-            if FA_selected is not None:
-                print_FA_table(FA_selected)
-            print("")
-
-            if FA_selected is not None:
-                print("Do you want to do the word recognition test ? (y, Y, yes, Yes, YES)")
-                if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
-                    print("Enter a word to test it (type \"end\" to stop the test):")
-                    word = input()
-                    while word != "end":
-                        FA_selected.recognize_word(word)
-                        word = input()
-                print("")
-
-                print("Do you want to construct an automaton recognizing the complementary language ? (y, Y, yes, Yes, YES)")
-                if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
-                    FA_selected = FA_selected.complementary()
-                    print_FA_table(FA_selected)
-                print("")
-
-            print("Do you want to choose a new automaton ? (y, Y, yes, Yes, YES)")
-            if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
-                keepGoing = True
-            else:
-                keepGoing = False
-            print("")
-
-    loop()
-
-
-    if debug :
-        with open("debug_output.txt",'w') as f:
-            sys.stdout=f
-            path='./automatons'
-            available_list=[]
-            for file in os.scandir(path):
-                if file.name.endswith('.txt'):
-                    available_list.append(file.name)
-            available_list = sorted(available_list, key=lambda x: int(''.join(filter(str.isdigit, x)) or 0))
-            for i in range(0,len(available_list)):
-                current = path+'/'+available_list[i]
-                print("----------------CURRENT AUTOMATA : ",current,"----------------")
-
-                FA_used, asynchronous = FA_create(current)
-                print_FA(FA_used)
-
-                if asynchronous:
+                if asyncronous:
                     print("This automaton contains epsilon transitions.")
                     print("Epsilon-closure of each state:")
-                    closures = FA_used.all_epsilon_closures()
+                    closures = FA_selected.all_epsilon_closures()
                     for state in closures:
                         print("E(", state, ") =", closures[state])
+                    print("")
 
                     print("Here is the equivalent synchronous automaton:")
-                    FA_used = FA_used.synchronize()
+                    FA_selected = FA_selected.synchronize()
+                    print_FA_table(FA_selected)
+                    print("")
+
+                deterministic = FA_selected.is_deterministic()
+                print("")
+
+                complete = FA_selected.is_complete()
+                print("")
+
+                standard = FA_selected.is_standard()
+                print("")
+
+                if not standard:
+                    print("Do you want to standardize it ? (y, Y, yes, Yes, YES)")
+                    if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+                        FA_selected = FA_selected.standardize()
+                        print_FA_table(FA_selected)
+                        print("")
+
+                        deterministic = FA_selected.is_deterministic()
+                        print("")
+
+                        complete = FA_selected.is_complete()
+                        print("")
+
+                        standard = FA_selected.is_standard()
+                        print("")
+
+                CDFA = FA_selected
+
+                if not deterministic or not complete:
+                    print("Do you want to obtain an equivalent complete deterministic FA ? (y, Y, yes, Yes, YES)")
+                    if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+
+                        if not deterministic:
+                            CDFA = CDFA.determinize()
+
+                        need_completion = False
+                        for state in CDFA.transitions:
+                            for j in range(int(CDFA.alphabet_size)):
+                                letter = chr(j + ord('a'))
+                                if CDFA.transitions[state][letter] == "":
+                                    need_completion = True
+
+                        if need_completion:
+                            CDFA = CDFA.completing()
+
+                        print("Here is the equivalent complete deterministic automaton:")
+                        print_FA_table(CDFA)
+                        print("")
+                    else:
+                        CDFA = FA_selected
+
+                print("Here is the equivalent minimal automaton")
+                if deterministic and complete:
+                    FA_selected = FA_selected.minimize()
+                elif CDFA != FA_selected:
+                    FA_selected = CDFA.minimize()
+                else:
+                    print("Minimization requires a complete deterministic automaton.")
+                    FA_selected = None
+
+                if FA_selected is not None:
+                    print_FA_table(FA_selected)
+                print("")
+
+                if FA_selected is not None:
+                    print("Do you want to do the word recognition test ? (y, Y, yes, Yes, YES)")
+                    if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+                        print("Enter a word to test it (type \"end\" to stop the test):")
+                        word = input()
+                        while word != "end":
+                            FA_selected.recognize_word(word)
+                            word = input()
+                    print("")
+
+                    print("Do you want to construct an automaton recognizing the complementary language ? (y, Y, yes, Yes, YES)")
+                    if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+                        FA_selected = FA_selected.complementary()
+                        print_FA_table(FA_selected)
+                    print("")
+
+                print("Do you want to choose a new automaton ? (y, Y, yes, Yes, YES)")
+                if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+                    keepGoing = True
+                else:
+                    keepGoing = False
+                print("")
+
+        loop()
+
+
+    if debug:
+        path = './automatons'
+        traces_path = './ExecutionTraces'
+
+        if not os.path.exists(traces_path):
+            os.makedirs(traces_path)
+
+        available_list = []
+        for file in os.scandir(path):
+            if file.name.endswith('.txt'):
+                available_list.append(file.name)
+
+        available_list = sorted(available_list, key=lambda x: int(''.join(filter(str.isdigit, x)) or 0))
+
+        original_stdout = sys.stdout
+
+        for i in range(len(available_list)):
+            current = path + '/' + available_list[i]
+            trace_file = traces_path + '/ExTr' + available_list[i]
+
+            try:
+                with open(trace_file, 'w') as f:
+                    sys.stdout = f
+
+                    print("----------------CURRENT AUTOMATA : ", current, "----------------")
+
+                    FA_used, asyncronous = FA_create(current)
                     print_FA(FA_used)
 
-                FA_used.is_deterministic()
+                    if asyncronous:
+                        print("This automaton contains epsilon transitions.")
+                        print("Epsilon-closure of each state:")
+                        closures = FA_used.all_epsilon_closures()
+                        for state in closures:
+                            print("E(", state, ") =", closures[state])
 
-                FA_used.is_complete()
+                        print("Here is the equivalent synchronous automaton:")
+                        FA_used = FA_used.synchronize()
+                        print_FA(FA_used)
 
-                FA_used.is_standard()
+                    FA_used.is_deterministic()
+                    print("")
 
-                print("----------------STANDARDIZED AUTOMATA----------------")
-                FA_Standardize = FA_used.standardize()
-                print_FA(FA_Standardize)
+                    FA_used.is_complete()
+                    print("")
 
-                print("----------------COMPLETED AUTOMATA----------------")
-                FA_Complete = FA_used.completing()
-                print_FA(FA_Complete)
+                    FA_used.is_standard()
+                    print("")
 
-                print("----------------DETERMINIZED AUTOMATA----------------")
-                FA_determinized = FA_used.determinize()
-                print_FA(FA_determinized)
+                    print("----------------STANDARDIZED AUTOMATA----------------")
+                    FA_Standardize = FA_used.standardize()
+                    print_FA(FA_Standardize)
 
-                print("----------------MINIMAL AUTOMATA----------------")
-                FA_minimal = FA_used.minimize()
-                print_FA(FA_minimal)
+                    print("----------------COMPLETED AUTOMATA----------------")
+                    FA_Complete = FA_used.completing()
+                    print_FA(FA_Complete)
 
-                print("----------------COMPLEMENTARY AUTOMATA----------------")
-                FA_complementary = FA_minimal.complementary()
-                print_FA(FA_complementary)
+                    print("----------------DETERMINIZED AUTOMATA----------------")
+                    FA_determinized = FA_used.determinize()
+                    print_FA(FA_determinized)
 
-                print("-----------------------------------------\t\t NEXT AUTOMATA\t\t-----------------------------------------")
+                    print("----------------MINIMAL AUTOMATA----------------")
+                    FA_minimal = FA_used.minimize()
+                    print_FA(FA_minimal)
+
+                    print("----------------COMPLEMENTARY AUTOMATA----------------")
+                    FA_complementary = FA_minimal.complementary()
+                    print_FA(FA_complementary)
+
+                    print("-----------------------------------------\t\t NEXT AUTOMATA\t\t-----------------------------------------")
+
+            except Exception as e:
+                sys.stdout = original_stdout
+                print("Error while generating trace for:", current)
+                print("Error:", e)
+
+                with open(trace_file, 'a') as f:
+                    f.write("\n\n[ERROR]\n")
+                    f.write(str(e) + "\n")
+
+            finally:
+                sys.stdout = original_stdout
+
+        print("Execution traces generated in ./ExecutionTraces/")
 
 main()
 
