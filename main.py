@@ -370,6 +370,91 @@ class FA:
         )
 
         return MCDFA
+    
+    def synchronize(self):
+    # transform an asynchronous FA into an equivalent synchronous FA
+    # by removing epsilon transitions (*)
+
+        def parse_targets(targets):
+            if targets == "" or targets is None:
+                return []
+
+            if isinstance(targets, list):
+                return [str(t) for t in targets if str(t) != ""]
+
+            if isinstance(targets, str):
+                return [t.strip() for t in targets.split(",") if t.strip() != ""]
+
+            return []
+
+        # new transition table without epsilon
+        n_transitions = {
+            str(i): {chr(j + ord('a')): "" for j in range(int(self.alphabet_size))}
+            for i in range(self.nb_states)
+        }
+
+        original_final_states = set(str(state) for state in self.final_states[1])
+
+        # final states of the synchronous automaton
+        n_final_states_list = []
+
+        for state in range(self.nb_states):
+            state = str(state)
+
+            # epsilon-closure of current state
+            closure = self.epsilon_closure(state)
+
+            # if one state in the closure is final, then the state becomes final
+            for closure_state in closure:
+                if closure_state in original_final_states:
+                    if state not in n_final_states_list:
+                        n_final_states_list.append(state)
+                    break
+
+            # build transitions for each real letter
+            for letter in range(int(self.alphabet_size)):
+                current_letter = chr(letter + ord('a'))
+                transition_elements = []
+
+                # first move with the letter from all states in epsilon-closure(state)
+                for closure_state in closure:
+                    direct_targets = parse_targets(self.transitions[closure_state][current_letter])
+
+                    # then take epsilon-closure of all reached states
+                    for target in direct_targets:
+                        target_closure = self.epsilon_closure(target)
+                        for closure_target in target_closure:
+                            if closure_target not in transition_elements:
+                                transition_elements.append(closure_target)
+
+                transition_elements = sorted(transition_elements, key=lambda x: int(x))
+
+                transition = ""
+                for element in transition_elements:
+                    transition += element + ","
+
+                if transition != "":
+                    transition = transition[:-1]
+
+                n_transitions[state][current_letter] = transition
+
+        # number of transitions really present in the new automaton
+        n_nb_transitions = 0
+        for state in n_transitions:
+            for letter in n_transitions[state]:
+                if n_transitions[state][letter] != "":
+                    n_nb_transitions += 1
+
+        Synchronous_FA = FA(
+            self.alphabet_size,
+            self.nb_states,
+            self.initial_states,
+            (len(n_final_states_list), n_final_states_list),
+            n_nb_transitions,
+            n_transitions
+        )
+
+        return Synchronous_FA
 
 
 
@@ -538,6 +623,8 @@ def main():
             keepGoing = True
 
             while keepGoing:
+
+
                 # print("What FA do you want to read ?")
                 selected = select_text_automata()
                 print("")
@@ -546,8 +633,23 @@ def main():
                 print_FA_table(FA_selected)
                 print("")
 
-                # TO ADD : if FA asynchronous, do the epsilon closure and print it, then apply da magic function to transform it into a synchronous FA and then print it again, and then continue with the rest of the code
+                if asyncronous: #if it's asyncronous we do something (epsuilon closure) so that the rest can run without any issue
+                    print("This automaton contains epsilon transitions.")
+                    print("Epsilon-closure of each state:")
+                    closures = FA_selected.all_epsilon_closures()
+                    for state in closures:
+                        print("E(", state, ") =", closures[state])
+                    print("")
 
+                    print("Here is the equivalent synchronous automaton:")
+                    FA_selected = FA_selected.synchronize()
+                    print_FA_table(FA_selected)
+                    print("")
+
+                    asyncronous = False
+                else:
+                    pass
+    
                 deterministic = FA_selected.is_deterministic()
                 print("")
 
