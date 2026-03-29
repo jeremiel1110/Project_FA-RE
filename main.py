@@ -40,13 +40,13 @@ class FA:
     def is_deterministic(self):
         lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
         if self.initial_states[0] != 1:
-            return print("The automata is not deterministic because it has more than one initial state.")
+            return print("Is it deterministic? The automata is not deterministic because it has more than one initial state.")
         for i in range(self.nb_states):
             for j in range(int(self.alphabet_size)):
                 if len(self.transitions[str(i)][lowercase_alphabet[j]]) > 1:    
-                    print("The automata is not deterministic because it has more than one transition for the same state and the same letter.")
+                    print("Is it deterministic? The automata is not deterministic because it has more than one transition for the same state and the same letter.")
                     return False
-        print("The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
+        print("Is it deterministic? The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
         return True
     
 
@@ -54,21 +54,21 @@ class FA:
         for i in range(self.nb_states):
             for j in range(int(self.alphabet_size)):
                 if len(self.transitions[str(i)][chr(j + ord('a'))]) == 0:
-                    return print("The automata is not complete because it has at least one state that does not have a transition for at least one letter.")
-        print("The automata is complete because all states have a transition for all letters.")
+                    return print("Is it complete? The automata is not complete because it has at least one state that does not have a transition for at least one letter.")
+        print("Is it complete? The automata is complete because all states have a transition for all letters.")
         return True
 
 
     def is_standard (self):
         if self.initial_states[0] != 1:
-            print("The automata is not standard because it has more than one initial state.")
+            print("Is it standard? The automata is not standard because it has more than one initial state.")
             return False
         for i in range(self.nb_states):
             for j in range(int(self.alphabet_size)):
                 if str(self.initial_states[0]) in self.transitions[str(i)][chr(j + ord('a'))]:
-                    print("The automata is not standard because it has a transition to the initial state.")
+                    print("Is it standard? The automata is not standard because it has a transition to the initial state.")
                     return False
-        print("The automata is standard because it has only one initial state and no transition to the initial state.")
+        print("Is it standard? The automata is standard because it has only one initial state and no transition to the initial state.")
         return True
 
     def epsilon_closure(self, states):
@@ -531,53 +531,77 @@ def main():
         """
 
 
-        # print("What FA do you want to read ?")
-        selected = select_text_automata()
-        print("")
-        FA_selected, asyncronous = FA_create(selected)
-        print_FA_table(FA_selected)
-        print("")
+        def loop():
+            keepGoing = True
 
-        deterministic = FA_selected.is_deterministic()
-        print("")
-        
-        standard = FA_selected.is_standard()
-        print("")
-
-        complete = FA_selected.is_complete()
-
-        if not complete:
-            print("Do you want to obtain an equivalent complete deterministic FA ?")
-            determinized_FA = None
-            if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
-                determinized_FA = FA_selected.determinize() # Does not modify the original FA, it creates a new one
-                print_FA_table(determinized_FA)
+            while keepGoing:
+                # print("What FA do you want to read ?")
+                selected = select_text_automata()
+                print("")
+                FA_selected, asyncronous = FA_create(selected)
+                
+                print_FA_table(FA_selected)
                 print("")
 
-        standardardize_FA = None
-        if determinized_FA != None:
-            standard = determinized_FA.is_standard()
-        else:
-            standard = FA_selected.is_standard()
-        if not standard:
-            print("Do you want to standardize it ?")
-            if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
-                if determinized_FA != None:
-                    standardardize_FA = determinized_FA.standardize()
-                else:
-                    standardardize_FA = FA_selected.standardize()
-            print_FA_table(standardardize_FA)
-            print("")
+                # TO ADD : if FA asynchronous, do the epsilon closure and print it, then apply da magic function to transform it into a synchronous FA and then print it again, and then continue with the rest of the code
 
-        print("Here is the equivalent minimal automaton")
-        if standardardize_FA != None:
-            minimal_FA = standardardize_FA.minimize()
-        elif determinized_FA != None:
-            minimal_FA = determinized_FA.minimize()
-        else:
-            minimal_FA = FA_selected.minimize()
-        
-        print_FA_table(minimal_FA)
+                deterministic = FA_selected.is_deterministic()
+                print("")
+
+                complete = FA_selected.is_complete()
+                print("")
+
+                if not deterministic or not complete:
+                    print("Do you want to obtain an equivalent complete deterministic FA ? (y, Y, yes, Yes, YES)")
+                    if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+                        if not deterministic:
+                            FA_selected = FA_selected.determinize()
+                        elif not complete:
+                            FA_selected = FA_selected.completing()
+
+                    print_FA_table(FA_selected)
+                    print("")
+
+                standard = FA_selected.is_standard()
+                print("")
+
+                if not standard:
+                    print("Do you want to standardize it ? (y, Y, yes, Yes, YES)")
+                    if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+                        FA_selected = FA_selected.standardize()
+                        print_FA_table(FA_selected)
+                        print("")
+
+                print("Here is the equivalent minimal automaton")
+                FA_selected = FA_selected.minimize()
+                print_FA_table(FA_selected)
+                print("")
+
+                print("Do you want to construct an automaton recognizing the complementary language ? (y, Y, yes, Yes, YES)")
+                if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+                    FA_selected = FA_selected.complementary()
+                    print_FA_table(FA_selected)
+                print("")
+
+                print("Do you want to do the word recognition test ? (y, Y, yes, Yes, YES)")
+                if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+                    print("Enter a word to test it (type \"end\" to stop the test):")
+                    word = input()
+                    while word != "end":
+                        FA_selected.recognize_word(word)
+                        word = input()
+                print("")
+                
+
+                print("Do you want to choose a new automaton ? (y, Y, yes, Yes, YES)")
+                if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+                    keepGoing = True
+                else:
+                    keepGoing = False
+                print("")
+
+        loop()
+
 
     if debug :
         with open("debug_ouput_"+str(time.ctime())+".debug",'w') as f:
