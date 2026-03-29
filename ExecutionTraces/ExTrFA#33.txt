@@ -64,36 +64,6 @@ Is it complete? The automata is not complete because it has at least one state t
 The automata is standard because it has only one initial state and no transition to the initial state.
 
 ----------------STANDARDIZED AUTOMATA----------------
-transition : 3,
-transition : 3,
-transition : 3,5,
-transition : 3,5,
-transition : 3,5,8,
-transition : 3,5,8,
-transition : 3,5,8,1,
-transition : 3,5,8,1,
-transition : 3,5,8,1,
-transition : 3,5,8,1,
-transition : 3,5,8,1,2,
-transition : 4,
-transition : 4,
-transition : 4,5,
-transition : 4,5,
-transition : 4,5,1,
-transition : 4,5,1,0,
-transition : 4,5,1,0,
-transition : 4,5,1,0,
-transition : 4,5,1,0,
-transition : 4,5,1,0,
-transition : 4,5,1,0,
-transition : 4,5,1,0,2,
-transition : 6,
-transition : 6,
-transition : 6,1,
-transition : 6,1,
-transition : 6,1,
-transition : 6,1,
-transition : 6,1,2,
 Alphabet size : 3
 Number of states : 14
 Initial states : (1, ['S'])
@@ -115,52 +85,13 @@ Transition table :
   <- |       10       |       --       |       --       |     11,12      |
   <- |       11       |       --       |       --       |     11,12      |
   <- |       12       |       --       |       --       |       --       |
-  -> |       S        |   3,5,8,1,2    |   4,5,1,0,2    |     6,1,2      |
+  -> |       S        |  3,5,8,11,12   |  4,5,10,11,12  |    6,11,12     |
 ----------------COMPLETED AUTOMATA----------------
-0 , 0
-0 , 1
-0 , 2
-1 , 0
-1 , 1
-1 , 2
-2 , 0
-2 , 1
-2 , 2
-3 , 0
-3 , 1
-3 , 2
-4 , 0
-4 , 1
-4 , 2
-5 , 0
-5 , 1
-5 , 2
-6 , 0
-6 , 1
-6 , 2
-7 , 0
-7 , 1
-7 , 2
-8 , 0
-8 , 1
-8 , 2
-9 , 0
-9 , 1
-9 , 2
-10 , 0
-10 , 1
-10 , 2
-11 , 0
-11 , 1
-11 , 2
-12 , 0
-12 , 1
-12 , 2
 Alphabet size : 3
 Number of states : 14
 Initial states : (1, ['0'])
 Final states : (7, ['0', '6', '7', '8', '10', '11', '12'])
-Number of transitions : 21
+Number of transitions : 42
 Transition table :
      |                |       a        |       b        |       c        |
 --------------------------------------------------------------------------
@@ -177,90 +108,90 @@ Transition table :
   <- |       10       |       P        |       P        |     11,12      |
   <- |       11       |       P        |       P        |     11,12      |
   <- |       12       |       P        |       P        |       P        |
-     |       S        |   3,5,8,1,2    |   4,5,1,0,2    |     6,1,2      |
      |       P        |       P        |       P        |       P        |
 ----------------DETERMINIZED AUTOMATA----------------
 Alphabet size : 3
-Number of states : 10
+Number of states : 9
 Initial states : (1, ['0'])
-Final states : (8, ['0', '10,11,12,4,5', '11,12,3,5,8', '11,12,6', '11,12,6,P', '11,12,8,P', '11,12,P', '12,6,P'])
-Number of transitions : 30
+Final states : (7, ['0', '10.11.12.4.5', '11.12', '11.12.3.5.8', '11.12.6', '11.12.8', '12.6'])
+Number of transitions : 27
 Transition table :
      |                |       a        |       b        |       c        |
 --------------------------------------------------------------------------
--><- |       0        |  11,12,3,5,8   |  10,11,12,4,5  |    11,12,6     |
-  <- |  11,12,3,5,8   |   11,12,8,P    |       P        |   11,12,6,P    |
-  <- |  10,11,12,4,5  |       P        |     4,5,P      |   11,12,6,P    |
-  <- |    11,12,6     |       P        |       P        |    11,12,P     |
-  <- |   11,12,8,P    |   11,12,8,P    |       P        |    11,12,P     |
+-><- |       0        |  11.12.3.5.8   |  10.11.12.4.5  |    11.12.6     |
+  <- |  11.12.3.5.8   |    11.12.8     |       P        |    11.12.6     |
+  <- |  10.11.12.4.5  |       P        |      4.5       |    11.12.6     |
+  <- |    11.12.6     |       P        |       P        |     11.12      |
+  <- |    11.12.8     |    11.12.8     |       P        |     11.12      |
+     |      4.5       |       P        |      4.5       |      12.6      |
+  <- |     11.12      |       P        |       P        |     11.12      |
+  <- |      12.6      |       P        |       P        |       P        |
      |       P        |       P        |       P        |       P        |
-  <- |   11,12,6,P    |       P        |       P        |    11,12,P     |
-     |     4,5,P      |       P        |     4,5,P      |     12,6,P     |
-  <- |    11,12,P     |       P        |       P        |    11,12,P     |
-  <- |     12,6,P     |       P        |       P        |       P        |
 ----------------MINIMAL AUTOMATA----------------
 ------ MINIMIZATION ------
+Is it deterministic? The automata is not deterministic because it has more than one transition for the same state and the same letter.
+Is it complete? The automata is complete because all states have a transition for all letters.
 Partition 0 :
-P0 = ['4,5,P', 'P']
-P1 = ['0', '10,11,12,4,5', '11,12,3,5,8', '11,12,6', '11,12,6,P', '11,12,8,P', '11,12,P', '12,6,P']
+P0 = ['4.5', 'P']
+P1 = ['0', '10.11.12.4.5', '11.12', '11.12.3.5.8', '11.12.6', '11.12.8', '12.6']
 Partition 1 :
-P0 = ['4,5,P']
-P1 = ['P']
-P2 = ['10,11,12,4,5', '11,12,6', '11,12,6,P', '11,12,P']
-P3 = ['11,12,3,5,8', '11,12,8,P']
-P4 = ['12,6,P']
+P0 = ['P']
+P1 = ['4.5']
+P2 = ['11.12.3.5.8', '11.12.8']
+P3 = ['10.11.12.4.5', '11.12', '11.12.6']
+P4 = ['12.6']
 P5 = ['0']
 Partition 2 :
-P0 = ['4,5,P']
-P1 = ['P']
-P2 = ['10,11,12,4,5']
-P3 = ['11,12,6', '11,12,6,P', '11,12,P']
-P4 = ['11,12,3,5,8', '11,12,8,P']
-P5 = ['12,6,P']
+P0 = ['P']
+P1 = ['4.5']
+P2 = ['11.12.3.5.8', '11.12.8']
+P3 = ['11.12', '11.12.6']
+P4 = ['10.11.12.4.5']
+P5 = ['12.6']
 P6 = ['0']
 Partition 3 :
-P0 = ['4,5,P']
-P1 = ['P']
-P2 = ['10,11,12,4,5']
-P3 = ['11,12,6', '11,12,6,P', '11,12,P']
-P4 = ['11,12,3,5,8', '11,12,8,P']
-P5 = ['12,6,P']
+P0 = ['P']
+P1 = ['4.5']
+P2 = ['11.12.3.5.8', '11.12.8']
+P3 = ['11.12', '11.12.6']
+P4 = ['10.11.12.4.5']
+P5 = ['12.6']
 P6 = ['0']
 State correspondence table:
-0 -> ['4,5,P']
-1 -> ['P']
-2 -> ['10,11,12,4,5']
-3 -> ['11,12,6', '11,12,6,P', '11,12,P']
-4 -> ['11,12,3,5,8', '11,12,8,P']
-5 -> ['12,6,P']
+0 -> ['P']
+1 -> ['4.5']
+2 -> ['11.12.3.5.8', '11.12.8']
+3 -> ['11.12', '11.12.6']
+4 -> ['10.11.12.4.5']
+5 -> ['12.6']
 6 -> ['0']
-Transitions for group 0 based on state 4,5,P :
-  0 -- a --> 1
+Transitions for group 0 based on state P :
+  0 -- a --> 0
   0 -- b --> 0
-  0 -- c --> 5
-Transitions for group 1 based on state P :
-  1 -- a --> 1
+  0 -- c --> 0
+Transitions for group 1 based on state 4.5 :
+  1 -- a --> 0
   1 -- b --> 1
-  1 -- c --> 1
-Transitions for group 2 based on state 10,11,12,4,5 :
-  2 -- a --> 1
+  1 -- c --> 5
+Transitions for group 2 based on state 11.12.3.5.8 :
+  2 -- a --> 2
   2 -- b --> 0
   2 -- c --> 3
-Transitions for group 3 based on state 11,12,6 :
-  3 -- a --> 1
-  3 -- b --> 1
+Transitions for group 3 based on state 11.12.6 :
+  3 -- a --> 0
+  3 -- b --> 0
   3 -- c --> 3
-Transitions for group 4 based on state 11,12,8,P :
-  4 -- a --> 4
+Transitions for group 4 based on state 10.11.12.4.5 :
+  4 -- a --> 0
   4 -- b --> 1
   4 -- c --> 3
-Transitions for group 5 based on state 12,6,P :
-  5 -- a --> 1
-  5 -- b --> 1
-  5 -- c --> 1
+Transitions for group 5 based on state 12.6 :
+  5 -- a --> 0
+  5 -- b --> 0
+  5 -- c --> 0
 Transitions for group 6 based on state 0 :
-  6 -- a --> 4
-  6 -- b --> 2
+  6 -- a --> 2
+  6 -- b --> 4
   6 -- c --> 3
 Alphabet size : 3
 Number of states : 7
@@ -270,13 +201,13 @@ Number of transitions : 21
 Transition table :
      |        |   a    |   b    |   c    |
 ------------------------------------------
-     |   0    |   1    |   0    |   5    |
-     |   1    |   1    |   1    |   1    |
-  <- |   2    |   1    |   0    |   3    |
-  <- |   3    |   1    |   1    |   3    |
-  <- |   4    |   4    |   1    |   3    |
-  <- |   5    |   1    |   1    |   1    |
--><- |   6    |   4    |   2    |   3    |
+     |   0    |   0    |   0    |   0    |
+     |   1    |   0    |   1    |   5    |
+  <- |   2    |   2    |   0    |   3    |
+  <- |   3    |   0    |   0    |   3    |
+  <- |   4    |   0    |   1    |   3    |
+  <- |   5    |   0    |   0    |   0    |
+-><- |   6    |   2    |   4    |   3    |
 ----------------COMPLEMENTARY AUTOMATA----------------
 Alphabet size : 3
 Number of states : 7
@@ -286,11 +217,11 @@ Number of transitions : 21
 Transition table :
      |        |   a    |   b    |   c    |
 ------------------------------------------
-  <- |   0    |   1    |   0    |   5    |
-  <- |   1    |   1    |   1    |   1    |
-     |   2    |   1    |   0    |   3    |
-     |   3    |   1    |   1    |   3    |
-     |   4    |   4    |   1    |   3    |
-     |   5    |   1    |   1    |   1    |
-  -> |   6    |   4    |   2    |   3    |
+  <- |   0    |   0    |   0    |   0    |
+  <- |   1    |   0    |   1    |   5    |
+     |   2    |   2    |   0    |   3    |
+     |   3    |   0    |   0    |   3    |
+     |   4    |   0    |   1    |   3    |
+     |   5    |   0    |   0    |   0    |
+  -> |   6    |   2    |   4    |   3    |
 -----------------------------------------		 NEXT AUTOMATA		-----------------------------------------

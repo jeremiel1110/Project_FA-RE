@@ -19,8 +19,6 @@ Is it complete? The automata is not complete because it has at least one state t
 The automata is not standard because it has a transition to the initial state.
 
 ----------------STANDARDIZED AUTOMATA----------------
-transition : 0,
-transition : 2,
 Alphabet size : 3
 Number of states : 6
 Initial states : (1, ['S'])
@@ -36,26 +34,11 @@ Transition table :
      |   4    |   4    |   4    |   4    |
   -> |   S    |   0    |   2    |   --   |
 ----------------COMPLETED AUTOMATA----------------
-0 , 0
-0 , 1
-0 , 2
-1 , 0
-1 , 1
-1 , 2
-2 , 0
-2 , 1
-2 , 2
-3 , 0
-3 , 1
-3 , 2
-4 , 0
-4 , 1
-4 , 2
 Alphabet size : 3
 Number of states : 6
 Initial states : (1, ['1'])
 Final states : (1, ['1'])
-Number of transitions : 16
+Number of transitions : 18
 Transition table :
      |        |   a    |   b    |   c    |
 ------------------------------------------
@@ -64,7 +47,6 @@ Transition table :
      |   2    |   1    |   4    |   4    |
      |   3    |   3    |   3    |   3    |
      |   4    |   4    |   4    |   4    |
-     |   S    |   0    |   2    |   --   |
      |   P    |   P    |   P    |   P    |
 ----------------DETERMINIZED AUTOMATA----------------
 Alphabet size : 3
@@ -78,45 +60,47 @@ Transition table :
 -><- |   1    |   0    |   2    |   P    |
      |   0    |   3    |   1    |   3    |
      |   2    |   1    |   4    |   4    |
-     |   P    |   P    |   P    |   P    |
      |   3    |   3    |   3    |   3    |
      |   4    |   4    |   4    |   4    |
+     |   P    |   P    |   P    |   P    |
 ----------------MINIMAL AUTOMATA----------------
 ------ MINIMIZATION ------
+Is it deterministic? The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.
+Is it complete? The automata is not complete because it has at least one state that does not have a transition for at least one letter.
 Partition 0 :
 P0 = ['0', '2', '3', '4', 'P']
 P1 = ['1']
 Partition 1 :
-P0 = ['2']
-P1 = ['3', '4', 'P']
-P2 = ['0']
+P0 = ['3', '4', 'P']
+P1 = ['0']
+P2 = ['2']
 P3 = ['1']
 Partition 2 :
-P0 = ['2']
-P1 = ['3', '4', 'P']
-P2 = ['0']
+P0 = ['3', '4', 'P']
+P1 = ['0']
+P2 = ['2']
 P3 = ['1']
 State correspondence table:
-0 -> ['2']
-1 -> ['3', '4', 'P']
-2 -> ['0']
+0 -> ['3', '4', 'P']
+1 -> ['0']
+2 -> ['2']
 3 -> ['1']
-Transitions for group 0 based on state 2 :
-  0 -- a --> 3
-  0 -- b --> 1
-  0 -- c --> 1
-Transitions for group 1 based on state 3 :
-  1 -- a --> 1
-  1 -- b --> 1
-  1 -- c --> 1
-Transitions for group 2 based on state 0 :
-  2 -- a --> 1
-  2 -- b --> 3
-  2 -- c --> 1
+Transitions for group 0 based on state P :
+  0 -- a --> 0
+  0 -- b --> 0
+  0 -- c --> 0
+Transitions for group 1 based on state 0 :
+  1 -- a --> 0
+  1 -- b --> 3
+  1 -- c --> 0
+Transitions for group 2 based on state 2 :
+  2 -- a --> 3
+  2 -- b --> 0
+  2 -- c --> 0
 Transitions for group 3 based on state 1 :
-  3 -- a --> 2
-  3 -- b --> 0
-  3 -- c --> 1
+  3 -- a --> 1
+  3 -- b --> 2
+  3 -- c --> 0
 Alphabet size : 3
 Number of states : 4
 Initial states : (1, ['3'])
@@ -125,10 +109,10 @@ Number of transitions : 12
 Transition table :
      |        |   a    |   b    |   c    |
 ------------------------------------------
-     |   0    |   3    |   1    |   1    |
-     |   1    |   1    |   1    |   1    |
-     |   2    |   1    |   3    |   1    |
--><- |   3    |   2    |   0    |   1    |
+     |   0    |   0    |   0    |   0    |
+     |   1    |   0    |   3    |   0    |
+     |   2    |   3    |   0    |   0    |
+-><- |   3    |   1    |   2    |   0    |
 ----------------COMPLEMENTARY AUTOMATA----------------
 Alphabet size : 3
 Number of states : 4
@@ -138,8 +122,8 @@ Number of transitions : 12
 Transition table :
      |        |   a    |   b    |   c    |
 ------------------------------------------
-  <- |   0    |   3    |   1    |   1    |
-  <- |   1    |   1    |   1    |   1    |
-  <- |   2    |   1    |   3    |   1    |
-  -> |   3    |   2    |   0    |   1    |
+  <- |   0    |   0    |   0    |   0    |
+  <- |   1    |   0    |   3    |   0    |
+  <- |   2    |   3    |   0    |   0    |
+  -> |   3    |   1    |   2    |   0    |
 -----------------------------------------		 NEXT AUTOMATA		-----------------------------------------

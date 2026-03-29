@@ -16,7 +16,6 @@ Is it complete? The automata is not complete because it has at least one state t
 The automata is standard because it has only one initial state and no transition to the initial state.
 
 ----------------STANDARDIZED AUTOMATA----------------
-transition : 1,
 Alphabet size : 1
 Number of states : 3
 Initial states : (1, ['S'])
@@ -29,8 +28,6 @@ Transition table :
   <- |   1    |   --   |
   -> |   S    |   1    |
 ----------------COMPLETED AUTOMATA----------------
-0 , 0
-1 , 0
 Alphabet size : 1
 Number of states : 3
 Initial states : (1, ['0'])
@@ -41,7 +38,6 @@ Transition table :
 ------------------------
   -> |   0    |   1    |
   <- |   1    |   P    |
-     |   S    |   1    |
      |   P    |   P    |
 ----------------DETERMINIZED AUTOMATA----------------
 Alphabet size : 1
@@ -57,6 +53,8 @@ Transition table :
      |   P    |   P    |
 ----------------MINIMAL AUTOMATA----------------
 ------ MINIMIZATION ------
+Is it deterministic? The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.
+Is it complete? The automata is not complete because it has at least one state that does not have a transition for at least one letter.
 Partition 0 :
 P0 = ['0', 'P']
 P1 = ['1']

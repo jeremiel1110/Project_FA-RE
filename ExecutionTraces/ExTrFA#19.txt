@@ -7,17 +7,16 @@ Number of transitions : 3
 Transition table :
      |        |   a    |
 ------------------------
-  <- |   0    |   --   |
+  <- |   0    |   0    |
   -> |   1    |   2    |
-     |   2    |   --   |
+     |   2    |   0    |
 Is it deterministic? The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.
 
-Is it complete? The automata is not complete because it has at least one state that does not have a transition for at least one letter.
+Is it complete? The automata is complete because all states have a transition for all letters.
 
 The automata is standard because it has only one initial state and no transition to the initial state.
 
 ----------------STANDARDIZED AUTOMATA----------------
-transition : 2,
 Alphabet size : 1
 Number of states : 4
 Initial states : (1, ['S'])
@@ -26,66 +25,71 @@ Number of transitions : 3
 Transition table :
      |        |   a    |
 ------------------------
-  <- |   0    |   --   |
+  <- |   0    |   0    |
      |   1    |   2    |
-     |   2    |   --   |
+     |   2    |   0    |
   -> |   S    |   2    |
 ----------------COMPLETED AUTOMATA----------------
-0 , 0
-1 , 0
-2 , 0
 Alphabet size : 1
-Number of states : 4
+Number of states : 3
 Initial states : (1, ['1'])
 Final states : (1, ['0'])
-Number of transitions : 5
+Number of transitions : 3
 Transition table :
      |        |   a    |
 ------------------------
-  <- |   0    |   P    |
+  <- |   0    |   0    |
   -> |   1    |   2    |
-     |   2    |   P    |
-     |   S    |   2    |
-     |   P    |   P    |
+     |   2    |   0    |
 ----------------DETERMINIZED AUTOMATA----------------
 Alphabet size : 1
 Number of states : 3
 Initial states : (1, ['1'])
-Final states : (0, [])
+Final states : (1, ['0'])
 Number of transitions : 3
 Transition table :
      |        |   a    |
 ------------------------
   -> |   1    |   2    |
-     |   2    |   P    |
-     |   P    |   P    |
+     |   2    |   0    |
+  <- |   0    |   0    |
 ----------------MINIMAL AUTOMATA----------------
 ------ MINIMIZATION ------
+Is it deterministic? The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.
+Is it complete? The automata is complete because all states have a transition for all letters.
 Partition 0 :
-P0 = ['1', '2', 'P']
+P0 = ['1', '2']
+P1 = ['0']
 Partition 1 :
-P0 = ['1', '2', 'P']
-State correspondence table:
-0 -> ['1', '2', 'P']
-Transitions for group 0 based on state 1 :
-  0 -- a --> 0
+P0 = ['1']
+P1 = ['2']
+P2 = ['0']
+Partition 2 :
+P0 = ['1']
+P1 = ['2']
+P2 = ['0']
+The automaton is already minimal.
 Alphabet size : 1
-Number of states : 1
-Initial states : (1, ['0'])
-Final states : (0, [])
-Number of transitions : 1
+Number of states : 3
+Initial states : (1, ['1'])
+Final states : (1, ['0'])
+Number of transitions : 3
 Transition table :
      |        |   a    |
 ------------------------
-  -> |   0    |   0    |
+  <- |   0    |   0    |
+  -> |   1    |   2    |
+     |   2    |   0    |
 ----------------COMPLEMENTARY AUTOMATA----------------
 Alphabet size : 1
-Number of states : 1
-Initial states : (1, ['0'])
-Final states : (1, ['0'])
-Number of transitions : 1
+Number of states : 3
+Initial states : (1, ['1'])
+Final states : (2, ['1', '2'])
+Number of transitions : 3
 Transition table :
      |        |   a    |
 ------------------------
--><- |   0    |   0    |
+     |   0    |   0    |
+-><- |   1    |   2    |
+  <- |   2    |   0    |
 -----------------------------------------		 NEXT AUTOMATA		-----------------------------------------

@@ -49,12 +49,6 @@ Is it complete? The automata is not complete because it has at least one state t
 The automata is standard because it has only one initial state and no transition to the initial state.
 
 ----------------STANDARDIZED AUTOMATA----------------
-transition : 2,
-transition : 3,
-transition : 3,
-transition : 3,5,
-transition : 3,5,
-transition : 3,5,7,
 Alphabet size : 2
 Number of states : 9
 Initial states : (1, ['S'])
@@ -73,27 +67,11 @@ Transition table :
   <- |    7    |   --    |   --    |
   -> |    S    |    2    |  3,5,7  |
 ----------------COMPLETED AUTOMATA----------------
-0 , 0
-0 , 1
-1 , 0
-1 , 1
-2 , 0
-2 , 1
-3 , 0
-3 , 1
-4 , 0
-4 , 1
-5 , 0
-5 , 1
-6 , 0
-6 , 1
-7 , 0
-7 , 1
 Alphabet size : 2
 Number of states : 9
 Initial states : (1, ['0'])
 Final states : (5, ['0', '1', '3', '6', '7'])
-Number of transitions : 12
+Number of transitions : 18
 Transition table :
      |         |    a    |    b    |
 ------------------------------------
@@ -105,87 +83,84 @@ Transition table :
      |    5    |    P    |  4,6,7  |
   <- |    6    |    P    |    5    |
   <- |    7    |    P    |    P    |
-     |    S    |    2    |  3,5,7  |
      |    P    |    P    |    P    |
 ----------------DETERMINIZED AUTOMATA----------------
 Alphabet size : 2
-Number of states : 11
+Number of states : 7
 Initial states : (1, ['0'])
-Final states : (8, ['0', '1,3,7', '1,3,7,P', '3,4,6,7,P', '3,5,7', '3,5,7,P', '3,7', '3,7,P'])
-Number of transitions : 22
+Final states : (5, ['0', '1.3.7', '3.4.6.7', '3.5.7', '3.7'])
+Number of transitions : 14
 Transition table :
-     |             |      a      |      b      |
-------------------------------------------------
--><- |      0      |      2      |    3,5,7    |
-     |      2      |     3,7     |    1,3,7    |
-  <- |    3,5,7    |      P      |  3,4,6,7,P  |
-  <- |     3,7     |      P      |    3,7,P    |
-  <- |    1,3,7    |     2,P     |    3,7,P    |
-     |      P      |      P      |      P      |
-  <- |  3,4,6,7,P  |      P      |   3,5,7,P   |
-  <- |    3,7,P    |      P      |    3,7,P    |
-     |     2,P     |    3,7,P    |   1,3,7,P   |
-  <- |   3,5,7,P   |      P      |  3,4,6,7,P  |
-  <- |   1,3,7,P   |     2,P     |    3,7,P    |
+     |           |     a     |     b     |
+------------------------------------------
+-><- |     0     |     2     |   3.5.7   |
+     |     2     |    3.7    |   1.3.7   |
+  <- |   3.5.7   |     P     |  3.4.6.7  |
+  <- |    3.7    |     P     |    3.7    |
+  <- |   1.3.7   |     2     |    3.7    |
+  <- |  3.4.6.7  |     P     |   3.5.7   |
+     |     P     |     P     |     P     |
 ----------------MINIMAL AUTOMATA----------------
 ------ MINIMIZATION ------
+Is it deterministic? The automata is not deterministic because it has more than one transition for the same state and the same letter.
+Is it complete? The automata is complete because all states have a transition for all letters.
 Partition 0 :
-P0 = ['2', '2,P', 'P']
-P1 = ['0', '1,3,7', '1,3,7,P', '3,4,6,7,P', '3,5,7', '3,5,7,P', '3,7', '3,7,P']
+P0 = ['2', 'P']
+P1 = ['0', '1.3.7', '3.4.6.7', '3.5.7', '3.7']
 Partition 1 :
-P0 = ['2', '2,P']
-P1 = ['P']
-P2 = ['0', '1,3,7', '1,3,7,P', '3,4,6,7,P', '3,5,7', '3,5,7,P', '3,7', '3,7,P']
+P0 = ['P']
+P1 = ['2']
+P2 = ['0', '1.3.7', '3.4.6.7', '3.5.7', '3.7']
 Partition 2 :
-P0 = ['2', '2,P']
-P1 = ['P']
-P2 = ['3,4,6,7,P', '3,5,7', '3,5,7,P', '3,7', '3,7,P']
-P3 = ['0', '1,3,7', '1,3,7,P']
+P0 = ['P']
+P1 = ['2']
+P2 = ['0', '1.3.7']
+P3 = ['3.4.6.7', '3.5.7', '3.7']
 Partition 3 :
-P0 = ['2', '2,P']
-P1 = ['P']
-P2 = ['3,4,6,7,P', '3,5,7', '3,5,7,P', '3,7', '3,7,P']
-P3 = ['0', '1,3,7', '1,3,7,P']
+P0 = ['P']
+P1 = ['2']
+P2 = ['0', '1.3.7']
+P3 = ['3.4.6.7', '3.5.7', '3.7']
 State correspondence table:
-0 -> ['2', '2,P']
-1 -> ['P']
-2 -> ['3,4,6,7,P', '3,5,7', '3,5,7,P', '3,7', '3,7,P']
-3 -> ['0', '1,3,7', '1,3,7,P']
-Transitions for group 0 based on state 2 :
-  0 -- a --> 2
-  0 -- b --> 3
-Transitions for group 1 based on state P :
-  1 -- a --> 1
-  1 -- b --> 1
-Transitions for group 2 based on state 3,4,6,7,P :
+0 -> ['P']
+1 -> ['2']
+2 -> ['0', '1.3.7']
+3 -> ['3.4.6.7', '3.5.7', '3.7']
+Transitions for group 0 based on state P :
+  0 -- a --> 0
+  0 -- b --> 0
+Transitions for group 1 based on state 2 :
+  1 -- a --> 3
+  1 -- b --> 2
+Transitions for group 2 based on state 0 :
   2 -- a --> 1
-  2 -- b --> 2
-Transitions for group 3 based on state 1,3,7 :
+  2 -- b --> 3
+Transitions for group 3 based on state 3.5.7 :
   3 -- a --> 0
-  3 -- b --> 2
+  3 -- b --> 3
 Alphabet size : 2
 Number of states : 4
-Initial states : (1, ['3'])
+Initial states : (1, ['2'])
 Final states : (2, ['2', '3'])
 Number of transitions : 8
 Transition table :
      |        |   a    |   b    |
 ---------------------------------
-     |   0    |   2    |   3    |
-     |   1    |   1    |   1    |
-  <- |   2    |   1    |   2    |
--><- |   3    |   0    |   2    |
+     |   0    |   0    |   0    |
+     |   1    |   3    |   2    |
+-><- |   2    |   1    |   3    |
+  <- |   3    |   0    |   3    |
 ----------------COMPLEMENTARY AUTOMATA----------------
 Alphabet size : 2
 Number of states : 4
-Initial states : (1, ['3'])
+Initial states : (1, ['2'])
 Final states : (2, ['0', '1'])
 Number of transitions : 8
 Transition table :
      |        |   a    |   b    |
 ---------------------------------
-  <- |   0    |   2    |   3    |
-  <- |   1    |   1    |   1    |
-     |   2    |   1    |   2    |
-  -> |   3    |   0    |   2    |
+  <- |   0    |   0    |   0    |
+  <- |   1    |   3    |   2    |
+  -> |   2    |   1    |   3    |
+     |   3    |   0    |   3    |
 -----------------------------------------		 NEXT AUTOMATA		-----------------------------------------

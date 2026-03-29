@@ -18,13 +18,6 @@ Is it complete? The automata is not complete because it has at least one state t
 The automata is not standard because it has more than one initial state.
 
 ----------------STANDARDIZED AUTOMATA----------------
-transition : 1,
-transition : 1,
-transition : 1,
-transition : 1,
-transition : 1,2,
-transition : 2,
-transition : 2,
 Alphabet size : 2
 Number of states : 5
 Initial states : (1, ['S'])
@@ -39,14 +32,6 @@ Transition table :
      |   3    |  1,2   |   --   |
   -> |   S    |  1,2   |   2    |
 ----------------COMPLETED AUTOMATA----------------
-0 , 0
-0 , 1
-1 , 0
-1 , 1
-2 , 0
-2 , 1
-3 , 0
-3 , 1
 Alphabet size : 2
 Number of states : 5
 Initial states : (3, ['0', '1', '3'])
@@ -59,94 +44,92 @@ Transition table :
 -><- |   1    |   1    |   2    |
      |   2    |   0    |   1    |
   -> |   3    |  1,2   |   P    |
-     |   S    |  1,2   |   2    |
      |   P    |   P    |   P    |
 ----------------DETERMINIZED AUTOMATA----------------
 Alphabet size : 2
-Number of states : 9
-Initial states : (1, ['0,1,3'])
-Final states : (5, ['0,1', '0,1,3', '1', '1,2', '1,P'])
-Number of transitions : 18
+Number of states : 6
+Initial states : (1, ['0.1.3'])
+Final states : (4, ['0.1', '0.1.3', '1', '1.2'])
+Number of transitions : 12
 Transition table :
      |         |    a    |    b    |
 ------------------------------------
--><- |  0,1,3  |   1,2   |   2,P   |
-  <- |   1,2   |   0,1   |   1,2   |
-     |   2,P   |   0,P   |   1,P   |
-  <- |   0,1   |    1    |    2    |
-     |   0,P   |   1,P   |   2,P   |
-  <- |   1,P   |   1,P   |   2,P   |
-  <- |    1    |    1    |    2    |
+-><- |  0.1.3  |   1.2   |    2    |
+  <- |   1.2   |   0.1   |   1.2   |
      |    2    |    0    |    1    |
+  <- |   0.1   |    1    |    2    |
      |    0    |    1    |    2    |
+  <- |    1    |    1    |    2    |
 ----------------MINIMAL AUTOMATA----------------
 ------ MINIMIZATION ------
+Is it deterministic? The automata is not deterministic because it has more than one initial state.
+Is it complete? The automata is complete because all states have a transition for all letters.
 Partition 0 :
-P0 = ['0', '0,P', '2', '2,P']
-P1 = ['0,1', '0,1,3', '1', '1,2', '1,P']
+P0 = ['0', '2']
+P1 = ['0.1', '0.1.3', '1', '1.2']
 Partition 1 :
-P0 = ['0', '0,P']
-P1 = ['2', '2,P']
-P2 = ['0,1', '0,1,3', '1', '1,P']
-P3 = ['1,2']
+P0 = ['0']
+P1 = ['2']
+P2 = ['1.2']
+P3 = ['0.1', '0.1.3', '1']
 Partition 2 :
-P0 = ['0', '0,P']
-P1 = ['2', '2,P']
-P2 = ['0,1,3']
-P3 = ['0,1', '1', '1,P']
-P4 = ['1,2']
+P0 = ['0']
+P1 = ['2']
+P2 = ['1.2']
+P3 = ['0.1.3']
+P4 = ['0.1', '1']
 Partition 3 :
-P0 = ['0', '0,P']
-P1 = ['2', '2,P']
-P2 = ['0,1,3']
-P3 = ['0,1', '1', '1,P']
-P4 = ['1,2']
+P0 = ['0']
+P1 = ['2']
+P2 = ['1.2']
+P3 = ['0.1.3']
+P4 = ['0.1', '1']
 State correspondence table:
-0 -> ['0', '0,P']
-1 -> ['2', '2,P']
-2 -> ['0,1,3']
-3 -> ['0,1', '1', '1,P']
-4 -> ['1,2']
-Transitions for group 0 based on state 0,P :
-  0 -- a --> 3
+0 -> ['0']
+1 -> ['2']
+2 -> ['1.2']
+3 -> ['0.1.3']
+4 -> ['0.1', '1']
+Transitions for group 0 based on state 0 :
+  0 -- a --> 4
   0 -- b --> 1
 Transitions for group 1 based on state 2 :
   1 -- a --> 0
-  1 -- b --> 3
-Transitions for group 2 based on state 0,1,3 :
+  1 -- b --> 4
+Transitions for group 2 based on state 1.2 :
   2 -- a --> 4
-  2 -- b --> 1
-Transitions for group 3 based on state 1 :
-  3 -- a --> 3
+  2 -- b --> 2
+Transitions for group 3 based on state 0.1.3 :
+  3 -- a --> 2
   3 -- b --> 1
-Transitions for group 4 based on state 1,2 :
-  4 -- a --> 3
-  4 -- b --> 4
+Transitions for group 4 based on state 0.1 :
+  4 -- a --> 4
+  4 -- b --> 1
 Alphabet size : 2
 Number of states : 5
-Initial states : (1, ['2'])
+Initial states : (1, ['3'])
 Final states : (3, ['2', '3', '4'])
 Number of transitions : 10
 Transition table :
      |        |   a    |   b    |
 ---------------------------------
-     |   0    |   3    |   1    |
-     |   1    |   0    |   3    |
--><- |   2    |   4    |   1    |
-  <- |   3    |   3    |   1    |
-  <- |   4    |   3    |   4    |
+     |   0    |   4    |   1    |
+     |   1    |   0    |   4    |
+  <- |   2    |   4    |   2    |
+-><- |   3    |   2    |   1    |
+  <- |   4    |   4    |   1    |
 ----------------COMPLEMENTARY AUTOMATA----------------
 Alphabet size : 2
 Number of states : 5
-Initial states : (1, ['2'])
+Initial states : (1, ['3'])
 Final states : (2, ['0', '1'])
 Number of transitions : 10
 Transition table :
      |        |   a    |   b    |
 ---------------------------------
-  <- |   0    |   3    |   1    |
-  <- |   1    |   0    |   3    |
-  -> |   2    |   4    |   1    |
-     |   3    |   3    |   1    |
-     |   4    |   3    |   4    |
+  <- |   0    |   4    |   1    |
+  <- |   1    |   0    |   4    |
+     |   2    |   4    |   2    |
+  -> |   3    |   2    |   1    |
+     |   4    |   4    |   1    |
 -----------------------------------------		 NEXT AUTOMATA		-----------------------------------------

@@ -17,10 +17,6 @@ Is it complete? The automata is not complete because it has at least one state t
 The automata is not standard because it has a transition to the initial state.
 
 ----------------STANDARDIZED AUTOMATA----------------
-transition : 0,
-transition : 1,
-transition : 1,
-transition : 1,0,
 Alphabet size : 2
 Number of states : 4
 Initial states : (1, ['S'])
@@ -34,12 +30,6 @@ Transition table :
   <- |   2    |   2    |   2    |
   -> |   S    |   0    |  1,0   |
 ----------------COMPLETED AUTOMATA----------------
-0 , 0
-0 , 1
-1 , 0
-1 , 1
-2 , 0
-2 , 1
 Alphabet size : 2
 Number of states : 4
 Initial states : (1, ['0'])
@@ -51,71 +41,69 @@ Transition table :
   -> |   0    |   0    |  1,0   |
      |   1    |   2    |   P    |
   <- |   2    |   2    |   2    |
-     |   S    |   0    |  1,0   |
      |   P    |   P    |   P    |
 ----------------DETERMINIZED AUTOMATA----------------
 Alphabet size : 2
-Number of states : 7
+Number of states : 4
 Initial states : (1, ['0'])
-Final states : (4, ['0,1,2', '0,1,2,P', '0,2', '0,2,P'])
-Number of transitions : 14
+Final states : (2, ['0.1.2', '0.2'])
+Number of transitions : 8
 Transition table :
-     |           |     a     |     b     |
-------------------------------------------
-  -> |     0     |     0     |    0,1    |
-     |    0,1    |    0,2    |   0,1,P   |
-  <- |    0,2    |    0,2    |   0,1,2   |
-     |   0,1,P   |   0,2,P   |   0,1,P   |
-  <- |   0,1,2   |    0,2    |  0,1,2,P  |
-  <- |   0,2,P   |   0,2,P   |  0,1,2,P  |
-  <- |  0,1,2,P  |   0,2,P   |  0,1,2,P  |
+     |         |    a    |    b    |
+------------------------------------
+  -> |    0    |    0    |   0.1   |
+     |   0.1   |   0.2   |   0.1   |
+  <- |   0.2   |   0.2   |  0.1.2  |
+  <- |  0.1.2  |   0.2   |  0.1.2  |
 ----------------MINIMAL AUTOMATA----------------
 ------ MINIMIZATION ------
+Is it deterministic? The automata is not deterministic because it has more than one transition for the same state and the same letter.
+Is it complete? The automata is complete because all states have a transition for all letters.
 Partition 0 :
-P0 = ['0', '0,1', '0,1,P']
-P1 = ['0,1,2', '0,1,2,P', '0,2', '0,2,P']
+P0 = ['0', '0.1']
+P1 = ['0.1.2', '0.2']
 Partition 1 :
-P0 = ['0,1', '0,1,P']
-P1 = ['0']
-P2 = ['0,1,2', '0,1,2,P', '0,2', '0,2,P']
+P0 = ['0']
+P1 = ['0.1']
+P2 = ['0.1.2', '0.2']
 Partition 2 :
-P0 = ['0,1', '0,1,P']
-P1 = ['0']
-P2 = ['0,1,2', '0,1,2,P', '0,2', '0,2,P']
+P0 = ['0']
+P1 = ['0.1']
+P2 = ['0.1.2', '0.2']
 State correspondence table:
-0 -> ['0,1', '0,1,P']
-1 -> ['0']
-2 -> ['0,1,2', '0,1,2,P', '0,2', '0,2,P']
-Transitions for group 0 based on state 0,1,P :
-  0 -- a --> 2
-  0 -- b --> 0
-Transitions for group 1 based on state 0 :
-  1 -- a --> 1
-  1 -- b --> 0
-Transitions for group 2 based on state 0,2,P :
+0 -> ['0']
+1 -> ['0.1']
+2 -> ['0.1.2', '0.2']
+Transitions for group 0 based on state 0 :
+  0 -- a --> 0
+  0 -- b --> 1
+Transitions for group 1 based on state 0.1 :
+  1 -- a --> 2
+  1 -- b --> 1
+Transitions for group 2 based on state 0.1.2 :
   2 -- a --> 2
   2 -- b --> 2
 Alphabet size : 2
 Number of states : 3
-Initial states : (1, ['1'])
+Initial states : (1, ['0'])
 Final states : (1, ['2'])
 Number of transitions : 6
 Transition table :
      |        |   a    |   b    |
 ---------------------------------
-     |   0    |   2    |   0    |
-  -> |   1    |   1    |   0    |
+  -> |   0    |   0    |   1    |
+     |   1    |   2    |   1    |
   <- |   2    |   2    |   2    |
 ----------------COMPLEMENTARY AUTOMATA----------------
 Alphabet size : 2
 Number of states : 3
-Initial states : (1, ['1'])
+Initial states : (1, ['0'])
 Final states : (2, ['0', '1'])
 Number of transitions : 6
 Transition table :
      |        |   a    |   b    |
 ---------------------------------
-  <- |   0    |   2    |   0    |
--><- |   1    |   1    |   0    |
+-><- |   0    |   0    |   1    |
+  <- |   1    |   2    |   1    |
      |   2    |   2    |   2    |
 -----------------------------------------		 NEXT AUTOMATA		-----------------------------------------

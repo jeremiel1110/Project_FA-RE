@@ -16,7 +16,6 @@ Is it complete? The automata is complete because all states have a transition fo
 The automata is standard because it has only one initial state and no transition to the initial state.
 
 ----------------STANDARDIZED AUTOMATA----------------
-transition : 0,
 Alphabet size : 1
 Number of states : 3
 Initial states : (1, ['S'])
@@ -29,20 +28,16 @@ Transition table :
      |   1    |   0    |
   -> |   S    |   0    |
 ----------------COMPLETED AUTOMATA----------------
-0 , 0
-1 , 0
 Alphabet size : 1
-Number of states : 3
+Number of states : 2
 Initial states : (1, ['1'])
 Final states : (1, ['0'])
-Number of transitions : 4
+Number of transitions : 2
 Transition table :
      |        |   a    |
 ------------------------
   <- |   0    |   0    |
   -> |   1    |   0    |
-     |   S    |   0    |
-     |   P    |   P    |
 ----------------DETERMINIZED AUTOMATA----------------
 Alphabet size : 1
 Number of states : 2
@@ -56,6 +51,8 @@ Transition table :
   <- |   0    |   0    |
 ----------------MINIMAL AUTOMATA----------------
 ------ MINIMIZATION ------
+Is it deterministic? The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.
+Is it complete? The automata is complete because all states have a transition for all letters.
 Partition 0 :
 P0 = ['1']
 P1 = ['0']
@@ -71,8 +68,8 @@ Number of transitions : 2
 Transition table :
      |        |   a    |
 ------------------------
-  -> |   1    |   0    |
   <- |   0    |   0    |
+  -> |   1    |   0    |
 ----------------COMPLEMENTARY AUTOMATA----------------
 Alphabet size : 1
 Number of states : 2
@@ -82,6 +79,6 @@ Number of transitions : 2
 Transition table :
      |        |   a    |
 ------------------------
--><- |   1    |   0    |
      |   0    |   0    |
+-><- |   1    |   0    |
 -----------------------------------------		 NEXT AUTOMATA		-----------------------------------------
