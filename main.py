@@ -15,13 +15,14 @@ def select_text_automata():
     automatas = sorted(automatas, key=lambda x: int(''.join(filter(str.isdigit, x)) or 0))
     selected = 'text_automatas.txt'
     
-    print("What automata do you want to choose ?")
-    print("selected :",selected)
+    print("What FA do you want to read ?")
+    # print("selected :",selected)
 
     for i in range(len(automatas)):
         print(i,".  ",automatas[i],"")
 
     selected = automatas[int(input())]
+    print("FA selected is", selected)
     return path+'/'+selected
 
 ############### DO NOT MODIFY ABOVE THIS LINE ###############
@@ -64,7 +65,7 @@ class FA:
             return False
         for i in range(self.nb_states):
             for j in range(int(self.alphabet_size)):
-                if "0" in self.transitions[str(i)][chr(j + ord('a'))]:
+                if str(self.initial_states[0]) in self.transitions[str(i)][chr(j + ord('a'))]:
                     print("The automata is not standard because it has a transition to the initial state.")
                     return False
         print("The automata is standard because it has only one initial state and no transition to the initial state.")
@@ -99,7 +100,7 @@ class FA:
                 for element in transition_elements:          #format correctly
                     transition += element+","
                 transition = transition[:-1] #to remove the last comma
-                print("transition :", transition)
+                # print("transition :", transition)
 
 
                 if transition not in n_states.keys() and transition != "":
@@ -108,8 +109,8 @@ class FA:
 
                 n_transitions.setdefault(current_state, {})[chr(letter + ord('a'))] = transition
 
-                for trs in n_transitions:
-                        print(n_transitions[trs],",",trs)
+                #for trs in n_transitions:
+                        #print(n_transitions[trs],",",trs)
             i+=1
 
         n_nb_states = len(n_states)
@@ -122,7 +123,7 @@ class FA:
         n_final_states = (0, [])
         for state in n_states.keys():
             for element in state.split(","):
-                print("element :", element," in ", self.final_states[1])
+                #print("element :", element," in ", self.final_states[1])
                 if element in self.final_states[1]:
                     n_final_states = (n_final_states[0]+1, n_final_states[1] + [state])
 
@@ -131,12 +132,12 @@ class FA:
         list_of_states = list(n_transitions.keys())
         for j in range(n_nb_states):
             for letter in range(int(self.alphabet_size)):
-                print(list_of_states[j],",",letter)
+                #print(list_of_states[j],",",letter)
                 if n_transitions[list_of_states[j]][chr(letter + ord('a'))] == "":
                     n_transitions[list_of_states[j]][chr(letter + ord('a'))] = "P"  
         n_transitions["P"] = {chr(i + ord('a')): "P" for i in range(int(self.alphabet_size))} #add the new state P        
 
-        print(n_transitions)
+        #print(n_transitions)
 
         DFA = FA(self.alphabet_size, n_nb_states, (1, [n_starting_state]), n_final_states, n_nb_transitions, n_transitions)
 
@@ -243,13 +244,13 @@ class FA:
 
         while changed:
             changed = False
-            new_partitions = []
+            new_partitions = {}
 
             for group in partitions:
                 signatures = {} 
 
                 for state in group:
-                    signature = {}
+                    signature = []
 
                     for letter in alphabet:
                         target = DFA.transitions[state][letter]
@@ -446,6 +447,7 @@ def main():
     if len(sys.argv) > 1 and sys.argv[1]=="--debug":
         debug=True
     if not debug:
+        """
         selected = select_text_automata()
         FA_used,asyncronous = FA_create(selected) #we get the automata and if it is asyncronous or not
         print_FA(FA_used)
@@ -457,6 +459,7 @@ def main():
         
     #    FA_used.is_complete()
 
+        
         if FA_used.is_standard == False :
             print("Do you want to standardize it ?")
             if chr(input())=='Y'|'y'|'yes'|'YES'|'Yes':
@@ -471,6 +474,56 @@ def main():
         
         CFA = FA_used.complementary()
         print_FA(CFA)
+        """
+
+
+        # print("What FA do you want to read ?")
+        selected = select_text_automata()
+        print("")
+        FA_selected, asyncronous = FA_create(selected)
+        print_FA_table(FA_selected)
+        print("")
+
+        deterministic = FA_selected.is_deterministic()
+        print("")
+        
+        standard = FA_selected.is_standard()
+        print("")
+
+        complete = FA_selected.is_complete()
+
+        if not complete:
+            print("Do you want to obtain an equivalent complete deterministic FA ?")
+            determinized_FA = None
+            if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+                determinized_FA = FA_selected.determinize() # Does not modify the original FA, it creates a new one
+                print_FA_table(determinized_FA)
+                print("")
+
+        standardardize_FA = None
+        if determinized_FA != None:
+            standard = determinized_FA.is_standard()
+        else:
+            standard = FA_selected.is_standard()
+        if not standard:
+            print("Do you want to standardize it ?")
+            if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+                if determinized_FA != None:
+                    standardardize_FA = determinized_FA.standardize()
+                else:
+                    standardardize_FA = FA_selected.standardize()
+            print_FA_table(standardardize_FA)
+            print("")
+
+        print("Here is the equivalent minimal automaton")
+        if standardardize_FA != None:
+            minimal_FA = standardardize_FA.minimize()
+        elif determinized_FA != None:
+            minimal_FA = determinized_FA.minimize()
+        else:
+            minimal_FA = FA_selected.minimize()
+        
+        
 
     if debug :
         with open("debug_ouput_"+str(time.ctime())+".debug",'w') as f:
