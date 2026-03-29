@@ -729,7 +729,7 @@ def main():
 
 
     if debug :
-        with open("debug_ouput_"+str(time.ctime())+".debug",'w') as f:
+        with open("debug_output.txt",'w') as f:
             sys.stdout=f
             path='./automatons'
             available_list=[]
@@ -740,25 +740,47 @@ def main():
             for i in range(0,len(available_list)):
                 current = path+'/'+available_list[i]
                 print("----------------CURRENT AUTOMATA : ",current,"----------------")
-                FA_used=FA_create(current)
+
+                FA_used, asyncronous = FA_create(current)
                 print_FA(FA_used)
+
+                if asyncronous:
+                    print("This automaton contains epsilon transitions.")
+                    print("Epsilon-closure of each state:")
+                    closures = FA_used.all_epsilon_closures()
+                    for state in closures:
+                        print("E(", state, ") =", closures[state])
+
+                    print("Here is the equivalent synchronous automaton:")
+                    FA_used = FA_used.synchronize()
+                    print_FA(FA_used)
+
                 FA_used.is_deterministic()
-                FA_used.is_complete() 
+
+                FA_used.is_complete()
+
                 FA_used.is_standard()
-                FA_Standardize=FA_used.standardize()
+
                 print("----------------STANDARDIZED AUTOMATA----------------")
+                FA_Standardize = FA_used.standardize()
                 print_FA(FA_Standardize)
-                FA_Complete=FA_used.completing()
+
                 print("----------------COMPLETED AUTOMATA----------------")
+                FA_Complete = FA_used.completing()
                 print_FA(FA_Complete)
-                if FA_used.is_complete() and FA_used.is_standard() == False :
-                    FA_determinized=FA_used.determinize()
-                    print("----------------DETERMINIZED AUTOMATA----------------")
-                    print_FA(FA_determinized)
-                #FA_completementary=FA_determinized.complementary()
+
+                print("----------------DETERMINIZED AUTOMATA----------------")
+                FA_determinized = FA_used.determinize()
+                print_FA(FA_determinized)
+
+                print("----------------MINIMAL AUTOMATA----------------")
+                FA_minimal = FA_used.minimize()
+                print_FA(FA_minimal)
+
                 print("----------------COMPLEMENTARY AUTOMATA----------------")
-                #print(FA_completementary)
-                #FA_completmentary.recognize_word
+                FA_complementary = FA_minimal.complementary()
+                print_FA(FA_complementary)
+
                 print("-----------------------------------------\t\t NEXT AUTOMATA\t\t-----------------------------------------")
 
 main()
