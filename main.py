@@ -119,74 +119,84 @@ class FA:
         return closures
 
 
-    def determinize(self): #we'll create each elt of a FA one by one
+    def determinize(self):
+        # Helper: convert "", "1", "1,3" into a sorted list without duplicates
+        def parse_targets(targets):
+            if targets == "" or targets is None:
+                return []
+            if isinstance(targets, str):
+                return sorted(set(t.strip() for t in targets.split(",") if t.strip() != ""))
+            if isinstance(targets, list):
+                return sorted(set(str(t).strip() for t in targets if str(t).strip() != ""))
+            return []
 
-        #starting_states
-        n_starting_state = ""
-        for character in self.initial_states[1]:
-            n_starting_state += str(character)+","
-        n_starting_state = n_starting_state[:-1] #to remove the last comma
+        # Initial DFA state = set of initial NFA states
+        initial_set = sorted(set(str(s) for s in self.initial_states[1]))
+        initial_name = ",".join(initial_set)
 
-        #transitions
-        n_states = {n_starting_state: {chr(i + ord('a')): [] for i in range(int(self.alphabet_size))}}
-        n_transitions = {}
-        states_to_process = [n_starting_state]
+        alphabet = [chr(i + ord('a')) for i in range(int(self.alphabet_size))]
 
-        i=0
-        while i<len(states_to_process):                     #iterate until we have processed all the states
-            current_state = states_to_process[i]
-            for letter in range(int(self.alphabet_size)):   #create the transition possibilities for each letter
-                transition = ""
-                transition_elements = []
-                for states in current_state.split(","):     #split the current state into elements
-                    if states != "":                        #to avoid empty states
-                        for character in self.transitions[states][chr(letter + ord('a'))]: #transitions for each letters
-                            if character not in transition_elements and character != "": #to avoid duplicates and empty states
-                                transition_elements.append(character)
+        dfa_transitions = {}
+        seen_states = set()
+        states_to_process = [initial_name]
 
-                for element in transition_elements:          #format correctly
-                    transition += element+","
-                transition = transition[:-1] #to remove the last comma
-                # print("transition :", transition)
+        seen_states.add(initial_name)
 
+        while states_to_process:
+            current_name = states_to_process.pop(0)
+            current_states = [s for s in current_name.split(",") if s != ""]
 
-                if transition not in n_states.keys() and transition != "":
-                    n_states[transition] = {chr(i + ord('a')): [] for i in range(int(self.alphabet_size))}
-                    states_to_process.append(transition)
+            dfa_transitions[current_name] = {}
 
-                n_transitions.setdefault(current_state, {})[chr(letter + ord('a'))] = transition
+            for letter in alphabet:
+                next_states = set()
 
-                #for trs in n_transitions:
-                        #print(n_transitions[trs],",",trs)
-            i+=1
+                for state in current_states:
+                    if state in self.transitions:
+                        targets = self.transitions[state].get(letter, "")
+                        for target in parse_targets(targets):
+                            next_states.add(target)
 
-        n_nb_states = len(n_states)
+                if len(next_states) == 0:
+                    dfa_transitions[current_name][letter] = "P"
+                else:
+                    next_name = ",".join(sorted(next_states))
+                    dfa_transitions[current_name][letter] = next_name
 
-        #nb_transitions
-        n_nb_transitions = len(n_transitions) * int(self.alphabet_size)
+                    if next_name not in seen_states:
+                        seen_states.add(next_name)
+                        states_to_process.append(next_name)
 
+        # Add sink state P if needed
+        need_sink = any(
+            dfa_transitions[state][letter] == "P"
+            for state in dfa_transitions
+            for letter in alphabet
+        )
 
-        #final states
-        n_final_states = (0, [])
-        for state in n_states.keys():
-            for element in state.split(","):
-                #print("element :", element," in ", self.final_states[1])
-                if element in self.final_states[1]:
-                    n_final_states = (n_final_states[0]+1, n_final_states[1] + [state])
+        if need_sink:
+            dfa_transitions["P"] = {letter: "P" for letter in alphabet}
+            seen_states.add("P")
 
+        # Final states: any DFA state containing at least one NFA final state
+        original_finals = set(str(s) for s in self.final_states[1])
+        dfa_finals = []
 
-        #completing
-        list_of_states = list(n_transitions.keys())
-        for j in range(n_nb_states):
-            for letter in range(int(self.alphabet_size)):
-                #print(list_of_states[j],",",letter)
-                if n_transitions[list_of_states[j]][chr(letter + ord('a'))] == "":
-                    n_transitions[list_of_states[j]][chr(letter + ord('a'))] = "P"  
-        n_transitions["P"] = {chr(i + ord('a')): "P" for i in range(int(self.alphabet_size))} #add the new state P        
+        for state_name in seen_states:
+            if state_name == "P":
+                continue
+            components = state_name.split(",")
+            if any(comp in original_finals for comp in components):
+                dfa_finals.append(state_name)
 
-        #print(n_transitions)
-
-        DFA = FA(self.alphabet_size, n_nb_states, (1, [n_starting_state]), n_final_states, n_nb_transitions, n_transitions)
+        DFA = FA(
+            self.alphabet_size,
+            len(seen_states),
+            (1, [initial_name]),
+            (len(dfa_finals), sorted(dfa_finals)),
+            len(seen_states) * int(self.alphabet_size),
+            dfa_transitions
+        )
 
         return DFA
     
