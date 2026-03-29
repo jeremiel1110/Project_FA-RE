@@ -856,6 +856,7 @@ def main():
         for i in range(len(available_list)):
             current = path + '/' + available_list[i]
             trace_file = traces_path + '/ExTr' + available_list[i]
+            print(trace_file)
 
             try:
                 with open(trace_file, 'w') as f:

@@ -76,7 +76,7 @@ P1 = ['1']
 State correspondence table:
 0 -> ['0', '2', '3', '4', 'P']
 1 -> ['1']
-Transitions for group 0 based on state 2 :
+Transitions for group 0 based on state 0 :
   0 -- a --> 0
   0 -- b --> 0
   0 -- c --> 0

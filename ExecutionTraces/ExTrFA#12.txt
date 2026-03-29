@@ -59,12 +59,12 @@ Partition 0 :
 P0 = ['0', 'P']
 P1 = ['1']
 Partition 1 :
-P0 = ['P']
-P1 = ['0']
+P0 = ['0']
+P1 = ['P']
 P2 = ['1']
 Partition 2 :
-P0 = ['P']
-P1 = ['0']
+P0 = ['0']
+P1 = ['P']
 P2 = ['1']
 The automaton is already minimal.
 Alphabet size : 4

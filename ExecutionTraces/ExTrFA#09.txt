@@ -79,55 +79,55 @@ P0 = ['2', '3', '4', 'P']
 P1 = ['5']
 P2 = ['0', '1']
 Partition 2 :
-P0 = ['2', '3', 'P']
-P1 = ['4']
+P0 = ['4']
+P1 = ['2', '3', 'P']
 P2 = ['5']
 P3 = ['0', '1']
 Partition 3 :
-P0 = ['2', 'P']
-P1 = ['3']
-P2 = ['4']
+P0 = ['4']
+P1 = ['2', 'P']
+P2 = ['3']
 P3 = ['5']
 P4 = ['0', '1']
 Partition 4 :
-P0 = ['P']
-P1 = ['2']
-P2 = ['3']
-P3 = ['4']
+P0 = ['4']
+P1 = ['P']
+P2 = ['2']
+P3 = ['3']
 P4 = ['5']
 P5 = ['0', '1']
 Partition 5 :
-P0 = ['P']
-P1 = ['2']
-P2 = ['3']
-P3 = ['4']
+P0 = ['4']
+P1 = ['P']
+P2 = ['2']
+P3 = ['3']
 P4 = ['5']
 P5 = ['0', '1']
 State correspondence table:
-0 -> ['P']
-1 -> ['2']
-2 -> ['3']
-3 -> ['4']
+0 -> ['4']
+1 -> ['P']
+2 -> ['2']
+3 -> ['3']
 4 -> ['5']
 5 -> ['0', '1']
-Transitions for group 0 based on state P :
-  0 -- a --> 0
-  0 -- b --> 0
-Transitions for group 1 based on state 2 :
-  1 -- a --> 2
-  1 -- b --> 2
-Transitions for group 2 based on state 3 :
+Transitions for group 0 based on state 4 :
+  0 -- a --> 4
+  0 -- b --> 4
+Transitions for group 1 based on state P :
+  1 -- a --> 1
+  1 -- b --> 1
+Transitions for group 2 based on state 2 :
   2 -- a --> 3
-  2 -- b --> 0
-Transitions for group 3 based on state 4 :
-  3 -- a --> 4
-  3 -- b --> 4
+  2 -- b --> 3
+Transitions for group 3 based on state 3 :
+  3 -- a --> 0
+  3 -- b --> 1
 Transitions for group 4 based on state 5 :
   4 -- a --> 5
-  4 -- b --> 0
-Transitions for group 5 based on state 1 :
-  5 -- a --> 1
-  5 -- b --> 0
+  4 -- b --> 1
+Transitions for group 5 based on state 0 :
+  5 -- a --> 2
+  5 -- b --> 1
 Alphabet size : 2
 Number of states : 6
 Initial states : (1, ['5'])
@@ -136,12 +136,12 @@ Number of transitions : 12
 Transition table :
      |        |   a    |   b    |
 ---------------------------------
-     |   0    |   0    |   0    |
-     |   1    |   2    |   2    |
-     |   2    |   3    |   0    |
-     |   3    |   4    |   4    |
-     |   4    |   5    |   0    |
--><- |   5    |   1    |   0    |
+     |   0    |   4    |   4    |
+     |   1    |   1    |   1    |
+     |   2    |   3    |   3    |
+     |   3    |   0    |   1    |
+     |   4    |   5    |   1    |
+-><- |   5    |   2    |   1    |
 ----------------COMPLEMENTARY AUTOMATA----------------
 Alphabet size : 2
 Number of states : 6
@@ -151,10 +151,10 @@ Number of transitions : 12
 Transition table :
      |        |   a    |   b    |
 ---------------------------------
-  <- |   0    |   0    |   0    |
-  <- |   1    |   2    |   2    |
-  <- |   2    |   3    |   0    |
-  <- |   3    |   4    |   4    |
-  <- |   4    |   5    |   0    |
-  -> |   5    |   1    |   0    |
+  <- |   0    |   4    |   4    |
+  <- |   1    |   1    |   1    |
+  <- |   2    |   3    |   3    |
+  <- |   3    |   0    |   1    |
+  <- |   4    |   5    |   1    |
+  -> |   5    |   2    |   1    |
 -----------------------------------------		 NEXT AUTOMATA		-----------------------------------------
