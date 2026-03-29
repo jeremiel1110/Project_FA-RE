@@ -125,7 +125,7 @@ Transitions for group 3 based on state 4 :
 Transitions for group 4 based on state 5 :
   4 -- a --> 5
   4 -- b --> 0
-Transitions for group 5 based on state 0 :
+Transitions for group 5 based on state 1 :
   5 -- a --> 1
   5 -- b --> 0
 Alphabet size : 2

@@ -79,7 +79,7 @@ P1 = ['1', '1.2']
 State correspondence table:
 0 -> ['0', '0.4', '2.3', '3', '3.4', '4', 'P']
 1 -> ['1', '1.2']
-Transitions for group 0 based on state 4 :
+Transitions for group 0 based on state 2.3 :
   0 -- a --> 0
   0 -- b --> 0
   0 -- c --> 0

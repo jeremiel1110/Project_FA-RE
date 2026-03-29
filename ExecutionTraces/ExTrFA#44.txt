@@ -75,7 +75,7 @@ State correspondence table:
 Transitions for group 0 based on state 0 :
   0 -- a --> 1
   0 -- b --> 1
-Transitions for group 1 based on state 1.2 :
+Transitions for group 1 based on state 2 :
   1 -- a --> 1
   1 -- b --> 1
 Alphabet size : 2

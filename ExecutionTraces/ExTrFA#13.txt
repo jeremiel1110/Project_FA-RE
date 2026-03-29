@@ -81,44 +81,44 @@ Partition 0 :
 P0 = ['1', '2']
 P1 = ['0', '3', '4', '5', '6', '7']
 Partition 1 :
-P0 = ['1']
-P1 = ['2']
+P0 = ['2']
+P1 = ['1']
 P2 = ['0', '3', '4', '5', '6', '7']
 Partition 2 :
-P0 = ['1']
-P1 = ['2']
+P0 = ['2']
+P1 = ['1']
 P2 = ['0', '3', '4', '5', '6', '7']
 State correspondence table:
-0 -> ['1']
-1 -> ['2']
+0 -> ['2']
+1 -> ['1']
 2 -> ['0', '3', '4', '5', '6', '7']
-Transitions for group 0 based on state 1 :
-  0 -- a --> 1
-Transitions for group 1 based on state 2 :
-  1 -- a --> 2
-Transitions for group 2 based on state 7 :
+Transitions for group 0 based on state 2 :
+  0 -- a --> 2
+Transitions for group 1 based on state 1 :
+  1 -- a --> 0
+Transitions for group 2 based on state 3 :
   2 -- a --> 2
 Alphabet size : 1
 Number of states : 3
-Initial states : (1, ['0'])
+Initial states : (1, ['1'])
 Final states : (1, ['2'])
 Number of transitions : 3
 Transition table :
      |        |   a    |
 ------------------------
-  -> |   0    |   1    |
-     |   1    |   2    |
+     |   0    |   2    |
+  -> |   1    |   0    |
   <- |   2    |   2    |
 ----------------COMPLEMENTARY AUTOMATA----------------
 Alphabet size : 1
 Number of states : 3
-Initial states : (1, ['0'])
+Initial states : (1, ['1'])
 Final states : (2, ['0', '1'])
 Number of transitions : 3
 Transition table :
      |        |   a    |
 ------------------------
--><- |   0    |   1    |
-  <- |   1    |   2    |
+  <- |   0    |   2    |
+-><- |   1    |   0    |
      |   2    |   2    |
 -----------------------------------------		 NEXT AUTOMATA		-----------------------------------------

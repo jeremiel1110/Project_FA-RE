@@ -67,7 +67,7 @@ Partition 1 :
 P0 = ['0', '1', '2', '3']
 State correspondence table:
 0 -> ['0', '1', '2', '3']
-Transitions for group 0 based on state 0 :
+Transitions for group 0 based on state 2 :
   0 -- a --> 0
   0 -- b --> 0
 Alphabet size : 2

@@ -71,36 +71,36 @@ Partition 0 :
 P0 = ['0', '2', '3', '4', 'P']
 P1 = ['1']
 Partition 1 :
-P0 = ['3', '4', 'P']
+P0 = ['2']
 P1 = ['0']
-P2 = ['2']
+P2 = ['3', '4', 'P']
 P3 = ['1']
 Partition 2 :
-P0 = ['3', '4', 'P']
+P0 = ['2']
 P1 = ['0']
-P2 = ['2']
+P2 = ['3', '4', 'P']
 P3 = ['1']
 State correspondence table:
-0 -> ['3', '4', 'P']
+0 -> ['2']
 1 -> ['0']
-2 -> ['2']
+2 -> ['3', '4', 'P']
 3 -> ['1']
-Transitions for group 0 based on state P :
-  0 -- a --> 0
-  0 -- b --> 0
-  0 -- c --> 0
+Transitions for group 0 based on state 2 :
+  0 -- a --> 3
+  0 -- b --> 2
+  0 -- c --> 2
 Transitions for group 1 based on state 0 :
-  1 -- a --> 0
+  1 -- a --> 2
   1 -- b --> 3
-  1 -- c --> 0
-Transitions for group 2 based on state 2 :
-  2 -- a --> 3
-  2 -- b --> 0
-  2 -- c --> 0
+  1 -- c --> 2
+Transitions for group 2 based on state P :
+  2 -- a --> 2
+  2 -- b --> 2
+  2 -- c --> 2
 Transitions for group 3 based on state 1 :
   3 -- a --> 1
-  3 -- b --> 2
-  3 -- c --> 0
+  3 -- b --> 0
+  3 -- c --> 2
 Alphabet size : 3
 Number of states : 4
 Initial states : (1, ['3'])
@@ -109,10 +109,10 @@ Number of transitions : 12
 Transition table :
      |        |   a    |   b    |   c    |
 ------------------------------------------
-     |   0    |   0    |   0    |   0    |
-     |   1    |   0    |   3    |   0    |
-     |   2    |   3    |   0    |   0    |
--><- |   3    |   1    |   2    |   0    |
+     |   0    |   3    |   2    |   2    |
+     |   1    |   2    |   3    |   2    |
+     |   2    |   2    |   2    |   2    |
+-><- |   3    |   1    |   0    |   2    |
 ----------------COMPLEMENTARY AUTOMATA----------------
 Alphabet size : 3
 Number of states : 4
@@ -122,8 +122,8 @@ Number of transitions : 12
 Transition table :
      |        |   a    |   b    |   c    |
 ------------------------------------------
-  <- |   0    |   0    |   0    |   0    |
-  <- |   1    |   0    |   3    |   0    |
-  <- |   2    |   3    |   0    |   0    |
-  -> |   3    |   1    |   2    |   0    |
+  <- |   0    |   3    |   2    |   2    |
+  <- |   1    |   2    |   3    |   2    |
+  <- |   2    |   2    |   2    |   2    |
+  -> |   3    |   1    |   0    |   2    |
 -----------------------------------------		 NEXT AUTOMATA		-----------------------------------------

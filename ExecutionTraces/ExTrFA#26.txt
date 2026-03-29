@@ -85,7 +85,7 @@ State correspondence table:
 1 -> ['1']
 2 -> ['2']
 3 -> ['3']
-Transitions for group 0 based on state 0 :
+Transitions for group 0 based on state P :
   0 -- a --> 0
   0 -- b --> 0
 Transitions for group 1 based on state 1 :
