@@ -38,6 +38,7 @@ class FA:
         self.transitions = transitions 
 
 
+
     def is_deterministic(self):
         lowercase_alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] #get alphabets character for links
         if self.initial_states[0] != 1:
@@ -392,6 +393,11 @@ class FA:
 
         return MCDFA
     
+
+
+
+
+
     def synchronize(self):
     # transform an asynchronous FA into an equivalent synchronous FA
     # by removing epsilon transitions (*)
@@ -479,6 +485,18 @@ class FA:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 def FA_create(selected:str) -> FA:
     with open(selected) as file:
         lines = [line.rstrip() for line in file]
@@ -518,6 +536,16 @@ def FA_create(selected:str) -> FA:
     imported_FA = FA(int(lines[0]), int(lines[1]), (int(starting_parts[0]), starting_states_list), (int(ending_parts[0]), ending_states_list), int(lines[4]), table)
 
     return imported_FA, epsilon_here
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -601,6 +629,14 @@ def print_FA_table(FA:FA):
 
 
 
+
+
+
+
+
+
+
+
 def main():
     debug=False
     if len(sys.argv) > 1 and sys.argv[1]=="--debug":
@@ -608,9 +644,9 @@ def main():
     if not debug:
         """
         selected = select_text_automata()
-        FA_used,asyncronous = FA_create(selected) #we get the automata and if it is asyncronous or not
+        FA_used,asynchronous = FA_create(selected) #we get the automata and if it is asynchronous or not
         print_FA(FA_used)
-        if asyncronous: #if it's asyncronous we do something (epsuilon closure) so that the rest can run without any issue
+        if asynchronous: #if it's asynchronous we do something (epsilon closure) so that the rest can run without any issue
             print("This automaton contains epsilon transitions.")
             print("Epsilon-closure of each state:")
             closures = FA_used.all_epsilon_closures()
@@ -647,12 +683,12 @@ def main():
 
             selected = select_text_automata()
             print("")
-            FA_selected, asyncronous = FA_create(selected)
+            FA_selected, asynchronous = FA_create(selected)
 
             print_FA_table(FA_selected)
             print("")
 
-            if asyncronous:
+            if asynchronous:
                 print("This automaton contains epsilon transitions.")
                 print("Epsilon-closure of each state:")
                 closures = FA_selected.all_epsilon_closures()
@@ -767,10 +803,10 @@ def main():
                 current = path+'/'+available_list[i]
                 print("----------------CURRENT AUTOMATA : ",current,"----------------")
 
-                FA_used, asyncronous = FA_create(current)
+                FA_used, asynchronous = FA_create(current)
                 print_FA(FA_used)
 
-                if asyncronous:
+                if asynchronous:
                     print("This automaton contains epsilon transitions.")
                     print("Epsilon-closure of each state:")
                     closures = FA_used.all_epsilon_closures()
