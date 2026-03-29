@@ -263,7 +263,7 @@ class FA:
         print("No")
         return False
 
-        def minimize(self):
+    def minimize(self):
         DFA = self.determinize()
 
         print("------ MINIMIZATION ------")
