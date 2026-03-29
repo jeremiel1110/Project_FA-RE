@@ -404,7 +404,10 @@ def FA_create(selected:str) -> FA:
         lettre = trans[letter_idx]
         target = trans[letter_idx + 1:]
         if src in table and lettre in table[src]:
-            table[src][lettre] = target
+            if table[src][lettre] == "":
+                table[src][lettre] = target
+            else:
+                table[src][lettre] += "," + target
 
     imported_FA = FA(int(lines[0]), int(lines[1]), (int(starting_parts[0]), starting_states_list), (int(ending_parts[0]), ending_states_list), int(lines[4]), table)
 
