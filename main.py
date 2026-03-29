@@ -129,86 +129,116 @@ class FA:
         return closures
 
 
-    def determinize(self):
-        # Helper: convert "", "1", "1,3" into a sorted list without duplicates
-        def parse_targets(targets):
-            if targets == "" or targets is None:
-                return []
-            if isinstance(targets, str):
-                return sorted(set(t.strip() for t in targets.split(",") if t.strip() != ""))
-            if isinstance(targets, list):
-                return sorted(set(str(t).strip() for t in targets if str(t).strip() != ""))
-            return []
+    def minimize(self):
+        # Minimize the current automaton as it is.
+        # This function assumes the automaton is already deterministic and complete.
 
-        # Initial DFA state = set of initial NFA states
-        initial_set = sorted(set(str(s) for s in self.initial_states[1]))
-        initial_name = ",".join(initial_set)
+        print("------ MINIMIZATION ------")
 
+        states = list(self.transitions.keys())
         alphabet = [chr(i + ord('a')) for i in range(int(self.alphabet_size))]
 
-        dfa_transitions = {}
-        seen_states = set()
-        states_to_process = [initial_name]
+        final_states = set(str(state) for state in self.final_states[1])
+        non_final_states = set(states) - final_states
 
-        seen_states.add(initial_name)
+        partitions = []
+        if len(non_final_states) > 0:
+            partitions.append(non_final_states)
+        if len(final_states) > 0:
+            partitions.append(final_states)
 
-        while states_to_process:
-            current_name = states_to_process.pop(0)
-            current_states = [s for s in current_name.split(",") if s != ""]
+        def print_partitions(parts, step):
+            print("Partition", step, ":")
+            for i in range(len(parts)):
+                print("P" + str(i), "=", sorted(list(parts[i])))
 
-            dfa_transitions[current_name] = {}
+        print_partitions(partitions, 0)
+
+        changed = True
+        step = 1
+
+        while changed:
+            changed = False
+            new_partitions = []
+
+            for group in partitions:
+                signatures = {}
+
+                for state in group:
+                    signature = []
+
+                    for letter in alphabet:
+                        target = self.transitions[state][letter]
+
+                        target_group = -1
+                        for i in range(len(partitions)):
+                            if target in partitions[i]:
+                                target_group = i
+                                break
+
+                        signature.append(target_group)
+
+                    signature = tuple(signature)
+
+                    if signature not in signatures:
+                        signatures[signature] = set()
+                    signatures[signature].add(state)
+
+                if len(signatures) > 1:
+                    changed = True
+
+                for sig in signatures:
+                    new_partitions.append(signatures[sig])
+
+            partitions = new_partitions
+            print_partitions(partitions, step)
+            step += 1
+
+        if len(partitions) == len(states):
+            print("The automaton is already minimal.")
+            return self
+
+        state_to_group = {}
+        for i in range(len(partitions)):
+            for state in partitions[i]:
+                state_to_group[state] = str(i)
+
+        print("State correspondence table:")
+        for i in range(len(partitions)):
+            print(str(i), "->", sorted(list(partitions[i])))
+
+        n_transitions = {}
+        for i in range(len(partitions)):
+            representative = list(partitions[i])[0]
+            n_transitions[str(i)] = {}
+
+            print("Transitions for group", i, "based on state", representative, ":")
 
             for letter in alphabet:
-                next_states = set()
+                target = self.transitions[representative][letter]
+                n_transitions[str(i)][letter] = state_to_group[target]
+                print(" ", str(i), "--", letter, "-->", state_to_group[target])
 
-                for state in current_states:
-                    if state in self.transitions:
-                        targets = self.transitions[state].get(letter, "")
-                        for target in parse_targets(targets):
-                            next_states.add(target)
+        n_initial_state = state_to_group[str(self.initial_states[1][0])]
+        n_final_states_list = []
 
-                if len(next_states) == 0:
-                    dfa_transitions[current_name][letter] = "P"
-                else:
-                    next_name = ",".join(sorted(next_states))
-                    dfa_transitions[current_name][letter] = next_name
+        for i in range(len(partitions)):
+            group_name = str(i)
+            for state in partitions[i]:
+                if state in final_states:
+                    n_final_states_list.append(group_name)
+                    break
 
-                    if next_name not in seen_states:
-                        seen_states.add(next_name)
-                        states_to_process.append(next_name)
-
-        # Add sink state P if needed
-        need_sink = any(
-            dfa_transitions[state][letter] == "P"
-            for state in dfa_transitions
-            for letter in alphabet
-        )
-
-        if need_sink:
-            dfa_transitions["P"] = {letter: "P" for letter in alphabet}
-            seen_states.add("P")
-
-        # Final states: any DFA state containing at least one NFA final state
-        original_finals = set(str(s) for s in self.final_states[1])
-        dfa_finals = []
-
-        for state_name in seen_states:
-            if state_name == "P":
-                continue
-            components = state_name.split(",")
-            if any(comp in original_finals for comp in components):
-                dfa_finals.append(state_name)
-
-        DFA = FA(
+        MCDFA = FA(
             self.alphabet_size,
-            len(seen_states),
-            (1, [initial_name]),
-            (len(dfa_finals), sorted(dfa_finals)),
-            len(seen_states) * int(self.alphabet_size),
-            dfa_transitions
+            len(partitions),
+            (1, [n_initial_state]),
+            (len(n_final_states_list), n_final_states_list),
+            len(partitions) * int(self.alphabet_size),
+            n_transitions
         )
 
-        return DFA
+        return MCDFA
     
     def completing(self):
         list_of_states = list(self.transitions.keys())
