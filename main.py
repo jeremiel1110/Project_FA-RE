@@ -70,6 +70,53 @@ class FA:
         print("The automata is standard because it has only one initial state and no transition to the initial state.")
         return True
 
+    def epsilon_closure(self, states):
+        """
+        Returns the epsilon-closure of one state or several states.
+        Epsilon transitions use the symbol '*'.
+        """
+
+        def parse_targets(targets):
+            if targets == "" or targets is None:
+                return []
+
+            if isinstance(targets, list):
+                return [str(t) for t in targets if str(t) != ""]
+
+            if isinstance(targets, str):
+                return [t.strip() for t in targets.split(",") if t.strip() != ""]
+
+            return []
+
+        if isinstance(states, str):
+            closure = {states}
+            stack = [states]
+        else:
+            closure = {str(s) for s in states}
+            stack = [str(s) for s in states]
+
+        while stack:
+            current_state = stack.pop()
+
+            if '*' not in self.transitions[current_state]:
+                continue
+
+            epsilon_targets = parse_targets(self.transitions[current_state]['*'])
+
+            for target in epsilon_targets:
+                if target not in closure:
+                    closure.add(target)
+                    stack.append(target)
+
+        return sorted(list(closure))
+
+
+    def all_epsilon_closures(self):
+        closures = {}
+        for state in self.transitions.keys():
+            closures[state] = self.epsilon_closure(state)
+        return closures
+
 
     def determinize(self): #we'll create each elt of a FA one by one
 
@@ -449,9 +496,13 @@ def main():
         selected = select_text_automata()
         FA_used,asyncronous = FA_create(selected) #we get the automata and if it is asyncronous or not
         print_FA(FA_used)
-        if asyncronous : #if it's asyncronous we do something (epsuilon closure) so that the rest can run without any issue
-            pass
-        else : #else we don't do shit and teh proggram continue
+        if asyncronous: #if it's asyncronous we do something (epsuilon closure) so that the rest can run without any issue
+            print("This automaton contains epsilon transitions.")
+            print("Epsilon-closure of each state:")
+            closures = FA_used.all_epsilon_closures()
+            for state in closures:
+                print("E(", state, ") =", closures[state])
+        else:
             pass
     #    FA_used.is_deterministic()
         
