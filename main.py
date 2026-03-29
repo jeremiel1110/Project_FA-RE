@@ -38,7 +38,6 @@ class FA:
         self.transitions = transitions 
 
 
-
     def is_deterministic(self):
         alphabet = [chr(i + ord('a')) for i in range(int(self.alphabet_size))]
 
@@ -65,14 +64,16 @@ class FA:
 
         print("Is it deterministic? The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.")
         return True
-    
 
     def is_complete(self):
-        for i in range(self.nb_states):
-            for j in range(int(self.alphabet_size)):
-                if len(self.transitions[str(i)][chr(j + ord('a'))]) == 0:
-                    return print("Is it complete? The automata is not complete because it has at least one state that does not have a transition for at least one letter.")
+        alphabet = [chr(i + ord('a')) for i in range(int(self.alphabet_size))]
+
+        for state in self.transitions:
+            for letter in alphabet:
+                if self.transitions[state][letter] == "":
+                    print("Is it complete? The automata is not complete because it has at least one state that does not have a transition for at least one letter.")
                     return False
+
         print("Is it complete? The automata is complete because all states have a transition for all letters.")
         return True
 
@@ -145,7 +146,6 @@ class FA:
             closures[state] = self.epsilon_closure(state)
         return closures
 
-
     def determinize(self):
         # Helper: convert "", "1", "1,3" into a sorted list without duplicates
         def parse_targets(targets):
@@ -171,7 +171,7 @@ class FA:
 
         while states_to_process:
             current_name = states_to_process.pop(0)
-            current_states = [s for s in current_name.split(",") if s != ""]
+            current_states = [s for s in current_name.split(".") if s != ""]
 
             dfa_transitions[current_name] = {}
 
@@ -187,7 +187,7 @@ class FA:
                 if len(next_states) == 0:
                     dfa_transitions[current_name][letter] = "P"
                 else:
-                    next_name = ",".join(sorted(next_states))
+                    next_name = ".".join(sorted(next_states))
                     dfa_transitions[current_name][letter] = next_name
 
                     if next_name not in seen_states:
@@ -212,7 +212,7 @@ class FA:
         for state_name in seen_states:
             if state_name == "P":
                 continue
-            components = state_name.split(",")
+            components = state_name.split(".")
             if any(comp in original_finals for comp in components):
                 dfa_finals.append(state_name)
 
@@ -226,38 +226,71 @@ class FA:
         )
 
         return DFA
-    
-    def completing(self):
-        list_of_states = list(self.transitions.keys())
-        n_transitions = self.transitions
-        for j in range(self.nb_states):
-            for letter in range(int(self.alphabet_size)):
-                print(list_of_states[j],",",letter)
-                if self.transitions[list_of_states[j]][chr(letter + ord('a'))] == "":
-                    n_transitions[list_of_states[j]][chr(letter + ord('a'))] = "P"  
-        n_transitions["P"] = {chr(i + ord('a')): "P" for i in range(int(self.alphabet_size))} #add the new state P        
-        
-        CFA = FA(self.alphabet_size, self.nb_states+1, self.initial_states, self.final_states, self.nb_transitions+2, n_transitions)
 
-        return CFA
+    def completing(self):
+        alphabet = [chr(i + ord('a')) for i in range(int(self.alphabet_size))]
+        n_transitions = {state: dict(self.transitions[state]) for state in self.transitions}
+
+        sink_needed = False
+
+        for state in n_transitions:
+            for letter in alphabet:
+                if n_transitions[state][letter] == "":
+                    n_transitions[state][letter] = "P"
+                    sink_needed = True
+
+        if sink_needed and "P" not in n_transitions:
+            n_transitions["P"] = {letter: "P" for letter in alphabet}
+
+        n_final_states = list(self.final_states[1])
+
+        n_nb_transitions = 0
+        for state in n_transitions:
+            for letter in alphabet:
+                if n_transitions[state][letter] != "":
+                    n_nb_transitions += 1
+
+        return FA(
+            self.alphabet_size,
+            len(n_transitions),
+            self.initial_states,
+            (len(n_final_states), n_final_states),
+            n_nb_transitions,
+            n_transitions
+        )
         
     def standardize(self):
+        alphabet = [chr(i + ord('a')) for i in range(int(self.alphabet_size))]
         n_starting_state = "S"
-        n_transitions = self.transitions
-        n_transitions[n_starting_state] = {chr(i + ord('a')): "" for i in range(int(self.alphabet_size))}
-        for letter in range(int(self.alphabet_size)):
-            transition = ""
-            for initial in self.initial_states[1]:
-                for character in n_transitions[str(initial)][chr(letter + ord('a'))]: #transitions for each letters
-                    if character != "" and character not in transition: #to avoid empty states
-                        transition += str(character)+","
-                    print("transition :", transition)
-            transition = transition[:-1] #to remove the last comma
-            n_transitions[n_starting_state][chr(letter + ord('a'))] = transition    
 
-        SFA = FA(self.alphabet_size, self.nb_states+1, (1, [n_starting_state]), self.final_states, self.nb_transitions, n_transitions)
-        
-        return SFA
+        # deep copy of transitions
+        n_transitions = {state: dict(self.transitions[state]) for state in self.transitions}
+        n_transitions[n_starting_state] = {letter: "" for letter in alphabet}
+
+        def parse_targets(targets):
+            if targets == "" or targets is None:
+                return []
+            return [t.strip() for t in targets.split(",") if t.strip() != ""]
+
+        for letter in alphabet:
+            collected_targets = []
+
+            for initial in self.initial_states[1]:
+                targets = parse_targets(n_transitions[str(initial)][letter])
+                for target in targets:
+                    if target not in collected_targets:
+                        collected_targets.append(target)
+
+            n_transitions[n_starting_state][letter] = ",".join(collected_targets)
+
+        return FA(
+            self.alphabet_size,
+            len(n_transitions),
+            (1, [n_starting_state]),
+            self.final_states,
+            self.nb_transitions,
+            n_transitions
+        )
     
     
     def complementary(self):
@@ -439,7 +472,6 @@ class FA:
 
         return MCDFA
     
-
     def synchronize(self):
     # transform an asynchronous FA into an equivalent synchronous FA
     # by removing epsilon transitions (*)
@@ -527,18 +559,6 @@ class FA:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 def FA_create(selected:str) -> FA:
     with open(selected) as file:
         lines = [line.rstrip() for line in file]
@@ -578,16 +598,6 @@ def FA_create(selected:str) -> FA:
     imported_FA = FA(int(lines[0]), int(lines[1]), (int(starting_parts[0]), starting_states_list), (int(ending_parts[0]), ending_states_list), int(lines[4]), table)
 
     return imported_FA, epsilon_here
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -671,25 +681,19 @@ def print_FA_table(FA:FA):
 
 
 
-
-
-
-
-
-
-
-
 def main():
     debug = False
     if len(sys.argv) > 1 and sys.argv[1] == "--debug":
-        debug = True
+        debug = True # It serve as the execution trace generator
+        # To use it run "python main_updated.py --debug"
+            # and it will generate execution traces for all the automatas in the folder ./automatons/ in the folder ./ExecutionTraces/
 
     if not debug:
         """
         selected = select_text_automata()
-        FA_used,asynchronous = FA_create(selected) #we get the automata and if it is asynchronous or not
+        FA_used,asyncronous = FA_create(selected) #we get the automata and if it is asyncronous or not
         print_FA(FA_used)
-        if asynchronous: #if it's asynchronous we do something (epsilon closure) so that the rest can run without any issue
+        if asyncronous: #if it's asyncronous we do something (epsuilon closure) so that the rest can run without any issue
             print("This automaton contains epsilon transitions.")
             print("Epsilon-closure of each state:")
             closures = FA_used.all_epsilon_closures()
