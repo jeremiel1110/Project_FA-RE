@@ -59,16 +59,25 @@ class FA:
         return True
 
 
-    def is_standard (self):
+    def is_standard(self):
         if self.initial_states[0] != 1:
-            print("Is it standard? The automata is not standard because it has more than one initial state.")
+            print("The automata is not standard because it has more than one initial state.")
             return False
-        for i in range(self.nb_states):
+
+        initial_state = str(self.initial_states[1][0])
+
+        for state in self.transitions:
             for j in range(int(self.alphabet_size)):
-                if str(self.initial_states[0]) in self.transitions[str(i)][chr(j + ord('a'))]:
-                    print("Is it standard? The automata is not standard because it has a transition to the initial state.")
-                    return False
-        print("Is it standard? The automata is standard because it has only one initial state and no transition to the initial state.")
+                letter = chr(j + ord('a'))
+                targets = self.transitions[state].get(letter, "")
+
+                if targets != "":
+                    target_list = [t.strip() for t in targets.split(",") if t.strip() != ""]
+                    if initial_state in target_list:
+                        print("The automata is not standard because it has a transition to the initial state.")
+                        return False
+
+        print("The automata is standard because it has only one initial state and no transition to the initial state.")
         return True
 
     def epsilon_closure(self, states):
