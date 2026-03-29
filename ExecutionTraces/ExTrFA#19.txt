@@ -1,0 +1,91 @@
+----------------CURRENT AUTOMATA :  ./automatons/FA#19.txt ----------------
+Alphabet size : 1
+Number of states : 3
+Initial states : (1, ['1'])
+Final states : (1, ['0'])
+Number of transitions : 3
+Transition table :
+     |        |   a    |
+------------------------
+  <- |   0    |   --   |
+  -> |   1    |   2    |
+     |   2    |   --   |
+Is it deterministic? The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.
+
+Is it complete? The automata is not complete because it has at least one state that does not have a transition for at least one letter.
+
+The automata is standard because it has only one initial state and no transition to the initial state.
+
+----------------STANDARDIZED AUTOMATA----------------
+transition : 2,
+Alphabet size : 1
+Number of states : 4
+Initial states : (1, ['S'])
+Final states : (1, ['0'])
+Number of transitions : 3
+Transition table :
+     |        |   a    |
+------------------------
+  <- |   0    |   --   |
+     |   1    |   2    |
+     |   2    |   --   |
+  -> |   S    |   2    |
+----------------COMPLETED AUTOMATA----------------
+0 , 0
+1 , 0
+2 , 0
+Alphabet size : 1
+Number of states : 4
+Initial states : (1, ['1'])
+Final states : (1, ['0'])
+Number of transitions : 5
+Transition table :
+     |        |   a    |
+------------------------
+  <- |   0    |   P    |
+  -> |   1    |   2    |
+     |   2    |   P    |
+     |   S    |   2    |
+     |   P    |   P    |
+----------------DETERMINIZED AUTOMATA----------------
+Alphabet size : 1
+Number of states : 3
+Initial states : (1, ['1'])
+Final states : (0, [])
+Number of transitions : 3
+Transition table :
+     |        |   a    |
+------------------------
+  -> |   1    |   2    |
+     |   2    |   P    |
+     |   P    |   P    |
+----------------MINIMAL AUTOMATA----------------
+------ MINIMIZATION ------
+Partition 0 :
+P0 = ['1', '2', 'P']
+Partition 1 :
+P0 = ['1', '2', 'P']
+State correspondence table:
+0 -> ['1', '2', 'P']
+Transitions for group 0 based on state 1 :
+  0 -- a --> 0
+Alphabet size : 1
+Number of states : 1
+Initial states : (1, ['0'])
+Final states : (0, [])
+Number of transitions : 1
+Transition table :
+     |        |   a    |
+------------------------
+  -> |   0    |   0    |
+----------------COMPLEMENTARY AUTOMATA----------------
+Alphabet size : 1
+Number of states : 1
+Initial states : (1, ['0'])
+Final states : (1, ['0'])
+Number of transitions : 1
+Transition table :
+     |        |   a    |
+------------------------
+-><- |   0    |   0    |
+-----------------------------------------		 NEXT AUTOMATA		-----------------------------------------

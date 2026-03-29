@@ -1,0 +1,133 @@
+----------------CURRENT AUTOMATA :  ./automatons/FA#13.txt ----------------
+Alphabet size : 1
+Number of states : 8
+Initial states : (1, ['1'])
+Final states : (6, ['0', '3', '4', '5', '6', '7'])
+Number of transitions : 8
+Transition table :
+     |        |   a    |
+------------------------
+  <- |   0    |   0    |
+  -> |   1    |   2    |
+     |   2    |   3    |
+  <- |   3    |   4    |
+  <- |   4    |   5    |
+  <- |   5    |   6    |
+  <- |   6    |   7    |
+  <- |   7    |   0    |
+Is it deterministic? The automata is deterministic because it has only one initial state and no more than one transition for the same state and the same letter.
+
+Is it complete? The automata is complete because all states have a transition for all letters.
+
+The automata is standard because it has only one initial state and no transition to the initial state.
+
+----------------STANDARDIZED AUTOMATA----------------
+transition : 2,
+Alphabet size : 1
+Number of states : 9
+Initial states : (1, ['S'])
+Final states : (6, ['0', '3', '4', '5', '6', '7'])
+Number of transitions : 8
+Transition table :
+     |        |   a    |
+------------------------
+  <- |   0    |   0    |
+     |   1    |   2    |
+     |   2    |   3    |
+  <- |   3    |   4    |
+  <- |   4    |   5    |
+  <- |   5    |   6    |
+  <- |   6    |   7    |
+  <- |   7    |   0    |
+  -> |   S    |   2    |
+----------------COMPLETED AUTOMATA----------------
+0 , 0
+1 , 0
+2 , 0
+3 , 0
+4 , 0
+5 , 0
+6 , 0
+7 , 0
+Alphabet size : 1
+Number of states : 9
+Initial states : (1, ['1'])
+Final states : (6, ['0', '3', '4', '5', '6', '7'])
+Number of transitions : 10
+Transition table :
+     |        |   a    |
+------------------------
+  <- |   0    |   0    |
+  -> |   1    |   2    |
+     |   2    |   3    |
+  <- |   3    |   4    |
+  <- |   4    |   5    |
+  <- |   5    |   6    |
+  <- |   6    |   7    |
+  <- |   7    |   0    |
+     |   S    |   2    |
+     |   P    |   P    |
+----------------DETERMINIZED AUTOMATA----------------
+Alphabet size : 1
+Number of states : 8
+Initial states : (1, ['1'])
+Final states : (6, ['0', '3', '4', '5', '6', '7'])
+Number of transitions : 8
+Transition table :
+     |        |   a    |
+------------------------
+  -> |   1    |   2    |
+     |   2    |   3    |
+  <- |   3    |   4    |
+  <- |   4    |   5    |
+  <- |   5    |   6    |
+  <- |   6    |   7    |
+  <- |   7    |   0    |
+  <- |   0    |   0    |
+----------------MINIMAL AUTOMATA----------------
+------ MINIMIZATION ------
+Partition 0 :
+P0 = ['1', '2']
+P1 = ['0', '3', '4', '5', '6', '7']
+Partition 1 :
+P0 = ['1']
+P1 = ['2']
+P2 = ['0', '3', '4', '5', '6', '7']
+Partition 2 :
+P0 = ['1']
+P1 = ['2']
+P2 = ['0', '3', '4', '5', '6', '7']
+State correspondence table:
+0 -> ['1']
+1 -> ['2']
+2 -> ['0', '3', '4', '5', '6', '7']
+Transitions for group 0 based on state 1 :
+  0 -- a --> 1
+Transitions for group 1 based on state 2 :
+  1 -- a --> 2
+Transitions for group 2 based on state 5 :
+  2 -- a --> 2
+Alphabet size : 1
+Number of states : 3
+Initial states : (1, ['0'])
+Final states : (1, ['2'])
+Number of transitions : 3
+Transition table :
+     |        |   a    |
+------------------------
+  -> |   0    |   1    |
+     |   1    |   2    |
+  <- |   2    |   2    |
+----------------COMPLEMENTARY AUTOMATA----------------
+Alphabet size : 1
+Number of states : 3
+Initial states : (1, ['0'])
+Final states : (2, ['0', '1'])
+Number of transitions : 3
+Transition table :
+     |        |   a    |
+------------------------
+-><- |   0    |   1    |
+  <- |   1    |   2    |
+     |   2    |   2    |
+-----------------------------------------		 NEXT AUTOMATA		-----------------------------------------
