@@ -263,9 +263,9 @@ class FA:
         print("No")
         return False
 
-    def minimize(self):
+        def minimize(self):
         DFA = self.determinize()
-        
+
         print("------ MINIMIZATION ------")
 
         states = list(DFA.transitions.keys())
@@ -280,10 +280,10 @@ class FA:
             partitions.append(final_states)
 
         def print_partitions(parts, step):
-            
-            print("Partition ", step, ":")
+            print("Partition", step, ":")
             for i in range(len(parts)):
-                print("P" + str(i),"=", sorted(list((parts[i]))))
+                print("P" + str(i), "=", sorted(list(parts[i])))
+
         print_partitions(partitions, 0)
 
         changed = True
@@ -291,10 +291,10 @@ class FA:
 
         while changed:
             changed = False
-            new_partitions = {}
+            new_partitions = []
 
             for group in partitions:
-                signatures = {} 
+                signatures = {}
 
                 for state in group:
                     signature = []
@@ -307,9 +307,11 @@ class FA:
                             if target in partitions[i]:
                                 target_group = i
                                 break
-                        
+
                         signature.append(target_group)
-                    signature = tuple(signature)    
+
+                    signature = tuple(signature)
+
                     if signature not in signatures:
                         signatures[signature] = set()
                     signatures[signature].add(state)
@@ -317,23 +319,24 @@ class FA:
                 if len(signatures) > 1:
                     changed = True
 
-                    for sig in signatures:
-                        new_partitions.append(signatures[sig])
+                for sig in signatures:
+                    new_partitions.append(signatures[sig])
+
             partitions = new_partitions
             print_partitions(partitions, step)
             step += 1
 
         if len(partitions) == len(states):
             print("The automaton is already minimal.")
-        
+
         state_to_group = {}
         for i in range(len(partitions)):
             for state in partitions[i]:
                 state_to_group[state] = str(i)
 
-        print("State correspondence table :")
+        print("State correspondence table:")
         for i in range(len(partitions)):
-                print(str(i), "->", sorted(list(partitions[i])))
+            print(str(i), "->", sorted(list(partitions[i])))
 
         n_transitions = {}
         for i in range(len(partitions)):
@@ -345,17 +348,17 @@ class FA:
             for letter in alphabet:
                 target = DFA.transitions[representative][letter]
                 n_transitions[str(i)][letter] = state_to_group[target]
-                print("  ", str(i), "--", letter, "-->", state_to_group[target])
-            
+                print(" ", str(i), "--", letter, "-->", state_to_group[target])
+
         n_initial_state = state_to_group[DFA.initial_states[1][0]]
         n_final_states_list = []
 
         for i in range(len(partitions)):
-                group_name = str(i)
-                for state in partitions[i]:
-                    if state in final_states:
-                        n_final_states_list.append(group_name)
-                        break
+            group_name = str(i)
+            for state in partitions[i]:
+                if state in final_states:
+                    n_final_states_list.append(group_name)
+                    break
 
         MCDFA = FA(
             DFA.alphabet_size,
@@ -574,7 +577,7 @@ def main():
         else:
             minimal_FA = FA_selected.minimize()
         
-        
+        print_FA_table(minimal_FA)
 
     if debug :
         with open("debug_ouput_"+str(time.ctime())+".debug",'w') as f:
