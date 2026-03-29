@@ -328,6 +328,7 @@ class FA:
 
         if len(partitions) == len(states):
             print("The automaton is already minimal.")
+            return DFA
 
         state_to_group = {}
         for i in range(len(partitions)):
