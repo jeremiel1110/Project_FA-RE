@@ -159,7 +159,7 @@ class FA:
 
         # Initial DFA state = set of initial NFA states
         initial_set = sorted(set(str(s) for s in self.initial_states[1]))
-        initial_name = ",".join(initial_set)
+        initial_name = ".".join(initial_set)
 
         alphabet = [chr(i + ord('a')) for i in range(int(self.alphabet_size))]
 
@@ -639,7 +639,7 @@ def print_FA_table(FA:FA):
                 prefix += "<-"
                 break
         if "<-" not in prefix:
-            for element in state_str.split(","):
+            for element in state_str.split("."):
                 for final in FA.final_states[1]:
                     if str(final) == element:
                         prefix += "<-"
