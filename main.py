@@ -727,7 +727,6 @@ def main():
             keepGoing = True
 
             while keepGoing:
-
                 selected = select_text_automata()
                 print("")
                 FA_selected, asyncronous = FA_create(selected)
@@ -782,14 +781,7 @@ def main():
                         if not deterministic:
                             CDFA = CDFA.determinize()
 
-                        need_completion = False
-                        for state in CDFA.transitions:
-                            for j in range(int(CDFA.alphabet_size)):
-                                letter = chr(j + ord('a'))
-                                if CDFA.transitions[state][letter] == "":
-                                    need_completion = True
-
-                        if need_completion:
+                        if not complete:
                             CDFA = CDFA.completing()
 
                         print("Here is the equivalent complete deterministic automaton:")
@@ -802,7 +794,16 @@ def main():
                 if deterministic and complete:
                     FA_selected = FA_selected.minimize()
                 elif CDFA != FA_selected:
-                    FA_selected = CDFA.minimize()
+                    deterministic = CDFA.is_deterministic()
+                    print("")
+                    complete = CDFA.is_complete()
+                    print("")
+
+                    if deterministic and complete:
+                        FA_selected = CDFA.minimize()
+                    else:
+                        print("Minimization requires a complete deterministic automaton.")
+                        FA_selected = None
                 else:
                     print("Minimization requires a complete deterministic automaton.")
                     FA_selected = None
@@ -823,9 +824,28 @@ def main():
 
                     print("Do you want to construct an automaton recognizing the complementary language ? (y, Y, yes, Yes, YES)")
                     if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
-                        FA_selected = FA_selected.complementary()
-                        print_FA_table(FA_selected)
+                        deterministic = FA_selected.is_deterministic()
+                        print("")
+                        complete = FA_selected.is_complete()
+                        print("")
+
+                        if deterministic and complete:
+                            FA_selected = FA_selected.complementary()
+                            print_FA_table(FA_selected)
+                        else:
+                            print("Complementary requires a complete deterministic automaton.")
                     print("")
+
+                    AnotherWordRecognitionTest = False
+                    if FA_selected is not None and AnotherWordRecognitionTest:
+                        print("Do you want to do the word recognition test ? (y, Y, yes, Yes, YES)")
+                        if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
+                            print("Enter a word to test it (type \"end\" to stop the test):")
+                            word = input()
+                            while word != "end":
+                                FA_selected.recognize_word(word)
+                                word = input()
+                        print("")
 
                 print("Do you want to choose a new automaton ? (y, Y, yes, Yes, YES)")
                 if str(input()) in ["Y", "y", "yes", "YES", "Yes"]:
@@ -878,10 +898,10 @@ def main():
                         FA_used = FA_used.synchronize()
                         print_FA(FA_used)
 
-                    FA_used.is_deterministic()
+                    deterministic = FA_used.is_deterministic()
                     print("")
 
-                    FA_used.is_complete()
+                    complete = FA_used.is_complete()
                     print("")
 
                     FA_used.is_standard()
@@ -900,12 +920,47 @@ def main():
                     print_FA(FA_determinized)
 
                     print("----------------MINIMAL AUTOMATA----------------")
-                    FA_minimal = FA_used.minimize()
-                    print_FA(FA_minimal)
+                    FA_for_minimization = FA_used
+
+                    if not deterministic:
+                        FA_for_minimization = FA_for_minimization.determinize()
+
+                    need_completion = False
+                    for state in FA_for_minimization.transitions:
+                        for j in range(int(FA_for_minimization.alphabet_size)):
+                            letter = chr(j + ord('a'))
+                            if FA_for_minimization.transitions[state][letter] == "":
+                                need_completion = True
+
+                    if need_completion:
+                        FA_for_minimization = FA_for_minimization.completing()
+
+                    deterministic = FA_for_minimization.is_deterministic()
+                    print("")
+                    complete = FA_for_minimization.is_complete()
+                    print("")
+
+                    if deterministic and complete:
+                        FA_minimal = FA_for_minimization.minimize()
+                        print_FA(FA_minimal)
+                    else:
+                        FA_minimal = None
+                        print("Minimization requires a complete deterministic automaton.")
 
                     print("----------------COMPLEMENTARY AUTOMATA----------------")
-                    FA_complementary = FA_minimal.complementary()
-                    print_FA(FA_complementary)
+                    if FA_minimal is not None:
+                        deterministic = FA_minimal.is_deterministic()
+                        print("")
+                        complete = FA_minimal.is_complete()
+                        print("")
+
+                        if deterministic and complete:
+                            FA_complementary = FA_minimal.complementary()
+                            print_FA(FA_complementary)
+                        else:
+                            print("Complementary requires a complete deterministic automaton.")
+                    else:
+                        print("Complementary cannot be applied because minimization failed.")
 
                     print("-----------------------------------------\t\t NEXT AUTOMATA\t\t-----------------------------------------")
 
@@ -924,5 +979,6 @@ def main():
         print("Execution traces generated in ./ExecutionTraces/")
 
 main()
+
 
 
